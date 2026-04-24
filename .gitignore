@@ -1,2 +1,4 @@
 .DS_Store
 PC1/eda/yelp_review_cleaned.parquet
+bin/
+*.out

@@ -1,0 +1,10 @@
+{
+  "rows_input": 6990280,
+  "rows_after_required_cols": 6990280,
+  "rows_drop_null_required": 0,
+  "rows_drop_invalid_date": 0,
+  "rows_drop_before_2019": 4878585,
+  "rows_drop_duplicate_review_id": 0,
+  "rows_output_cleaned": 2111695,
+  "chunks_processed": 14
+}

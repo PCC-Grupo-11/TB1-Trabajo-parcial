@@ -1,0 +1,113 @@
+package cli
+
+import (
+	"flag"
+	"fmt"
+	"io"
+	"os"
+	"strconv"
+	"strings"
+
+	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
+)
+
+const usageText = `Usage:
+  benchmark -m <sequential|concurrent> [-n runs] [-g goroutines]
+  benchmark --mode <sequential|concurrent> [--runs runs] [--goroutines goroutines]
+
+Flags:
+  -m, --mode         Required. Execution mode: sequential|concurrent
+  -n, --runs         Optional. Number of iterations (default 1)
+  -g, --goroutines   Optional. Number of goroutines (default 4)
+`
+
+type stringFlag struct {
+	value  string
+	wasSet bool
+}
+
+func (s *stringFlag) String() string {
+	return s.value
+}
+
+func (s *stringFlag) Set(value string) error {
+	s.value = value
+	s.wasSet = true
+	return nil
+}
+
+type intFlag struct {
+	value  int
+	wasSet bool
+}
+
+func (i *intFlag) String() string {
+	return fmt.Sprintf("%d", i.value)
+}
+
+func (i *intFlag) Set(value string) error {
+	parsed, err := strconv.Atoi(value)
+	if err != nil {
+		return fmt.Errorf("invalid integer value %q", value)
+	}
+	i.value = parsed
+	i.wasSet = true
+	return nil
+}
+
+func Parse() (model.Config, error) {
+	return ParseArgs(os.Args[1:])
+}
+
+func ParseArgs(args []string) (model.Config, error) {
+	fs := flag.NewFlagSet("benchmark", flag.ContinueOnError)
+	fs.SetOutput(io.Discard)
+
+	modeFlag := &stringFlag{}
+	runsFlag := &intFlag{value: 1}
+	goroutinesFlag := &intFlag{value: 4}
+
+	fs.Var(modeFlag, "m", "execution mode")
+	fs.Var(modeFlag, "mode", "execution mode")
+	fs.Var(runsFlag, "n", "number of runs")
+	fs.Var(runsFlag, "runs", "number of runs")
+	fs.Var(goroutinesFlag, "g", "number of goroutines")
+	fs.Var(goroutinesFlag, "goroutines", "number of goroutines")
+
+	if err := fs.Parse(args); err != nil {
+		return model.Config{}, fmt.Errorf("%w\n\n%s", err, usageText)
+	}
+
+	if !modeFlag.wasSet || strings.TrimSpace(modeFlag.value) == "" {
+		return model.Config{}, fmt.Errorf("mode is required\n\n%s", usageText)
+	}
+
+	mode := strings.ToLower(strings.TrimSpace(modeFlag.value))
+	if mode != "sequential" && mode != "concurrent" {
+		return model.Config{}, fmt.Errorf("invalid mode %q; expected sequential|concurrent\n\n%s", modeFlag.value, usageText)
+	}
+
+	if runsFlag.value < 1 {
+		return model.Config{}, fmt.Errorf("runs must be >= 1")
+	}
+
+	cfg := model.Config{
+		Mode: mode,
+		Runs: runsFlag.value,
+	}
+
+	if mode == "sequential" {
+		if goroutinesFlag.wasSet {
+			return model.Config{}, fmt.Errorf("goroutines is only valid in concurrent mode")
+		}
+		cfg.Goroutines = 1
+		return cfg, nil
+	}
+
+	if goroutinesFlag.value < 1 {
+		return model.Config{}, fmt.Errorf("goroutines must be >= 1")
+	}
+	cfg.Goroutines = goroutinesFlag.value
+
+	return cfg, nil
+}

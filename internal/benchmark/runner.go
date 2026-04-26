@@ -7,6 +7,22 @@ import (
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
 )
 
+func StartRecordStream(cfg model.Config) (<-chan model.Record, <-chan error) {
+	bufferSize := cfg.Goroutines * 10
+	if bufferSize < 10 {
+		bufferSize = 10
+	}
+	recordsChan := make(chan model.Record, bufferSize)
+	errChan := make(chan error)
+
+	go func() {
+		errChan <- StreamRecords(cfg.Input, recordsChan)
+		close(errChan)
+	}()
+
+	return recordsChan, errChan
+}
+
 func Run(cfg model.Config) ([]model.Iteration, error) {
 	if cfg.Runs < 1 {
 		return nil, fmt.Errorf("runs must be >= 1")

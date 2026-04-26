@@ -12,11 +12,12 @@ import (
 )
 
 const usageText = `Usage:
-  benchmark -m <sequential|concurrent> [-n runs] [-g goroutines]
-  benchmark --mode <sequential|concurrent> [--runs runs] [--goroutines goroutines]
+	benchmark -m <sequential|concurrent> --input <dataset.csv> [-n runs] [-g goroutines]
+	benchmark --mode <sequential|concurrent> --input <dataset.csv> [--runs runs] [--goroutines goroutines]
 
 Flags:
   -m, --mode         Required. Execution mode: sequential|concurrent
+	--input            Required. Dataset path
   -n, --runs         Optional. Number of iterations (default 1)
   -g, --goroutines   Optional. Number of goroutines (default 4)
 `
@@ -64,11 +65,13 @@ func ParseArgs(args []string) (model.Config, error) {
 	fs.SetOutput(io.Discard)
 
 	modeFlag := &stringFlag{}
+	inputFlag := &stringFlag{}
 	runsFlag := &intFlag{value: 1}
 	goroutinesFlag := &intFlag{value: 4}
 
 	fs.Var(modeFlag, "m", "execution mode")
 	fs.Var(modeFlag, "mode", "execution mode")
+	fs.Var(inputFlag, "input", "dataset path")
 	fs.Var(runsFlag, "n", "number of runs")
 	fs.Var(runsFlag, "runs", "number of runs")
 	fs.Var(goroutinesFlag, "g", "number of goroutines")
@@ -87,13 +90,18 @@ func ParseArgs(args []string) (model.Config, error) {
 		return model.Config{}, fmt.Errorf("invalid mode %q; expected sequential|concurrent\n\n%s", modeFlag.value, usageText)
 	}
 
+	if !inputFlag.wasSet || strings.TrimSpace(inputFlag.value) == "" {
+		return model.Config{}, fmt.Errorf("input is required\n\n%s", usageText)
+	}
+
 	if runsFlag.value < 1 {
 		return model.Config{}, fmt.Errorf("runs must be >= 1")
 	}
 
 	cfg := model.Config{
-		Mode: mode,
-		Runs: runsFlag.value,
+		Mode:  mode,
+		Input: strings.TrimSpace(inputFlag.value),
+		Runs:  runsFlag.value,
 	}
 
 	if mode == "sequential" {

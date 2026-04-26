@@ -1,9 +1,33 @@
 package model
 
+import "sync"
+
 type Config struct {
 	Mode       string `json:"mode"`
+	Input      string `json:"input"`
 	Runs       int    `json:"runs"`
 	Goroutines int    `json:"goroutines"`
+}
+
+type Record struct {
+	UserKey   string
+	TargetKey string
+	TypeKey   string
+}
+
+type DetectionResult struct {
+	SuspiciousUsers   []string `json:"suspicious_users"`
+	SuspiciousTargets []string `json:"suspicious_targets"`
+	SuspiciousPairs   []string `json:"suspicious_pairs"`
+}
+
+type Shard struct {
+	Mu sync.Mutex
+
+	UserCounts   map[string]int
+	TargetCounts map[string]int
+	PairCounts   map[string]int
+	TypeCounts   map[string]int
 }
 
 type DeviceInfo struct {
@@ -14,6 +38,7 @@ type DeviceInfo struct {
 
 type ExecutionParams struct {
 	Mode       string `json:"mode"`
+	Input      string `json:"input"`
 	Runs       int    `json:"runs"`
 	Goroutines int    `json:"goroutines"`
 }
@@ -38,4 +63,5 @@ type Report struct {
 	ExecutionParams ExecutionParams `json:"execution_params"`
 	Iterations      []Iteration     `json:"iterations"`
 	Summary         Summary         `json:"summary"`
+	DetectionResult DetectionResult `json:"detection_result"`
 }

@@ -41,9 +41,9 @@ func PrintReport(report model.Report) {
 	fmt.Printf("Total runs: %d\n", report.Summary.TotalRuns)
 	fmt.Printf("Mean time (ms): %.3f\n", report.Summary.MeanTimeMs)
 	fmt.Printf("Trimmed mean time (ms): %.3f\n", report.Summary.TrimmedMeanTimeMs)
-	fmt.Printf("Average RAM (Heap Alloc): %.3f MB\n", report.Summary.AverageHeapAllocMB)
-	fmt.Printf("Average RAM (RSS):        %.3f MB\n", report.Summary.AverageRSSDeltaMB)
-	fmt.Printf("Average RAM (Peak RSS):   %.3f MB\n", report.Summary.AveragePeakRSSMB)
+	fmt.Printf("Peak RAM Usage (RSS):    %.3f MB\n", report.Summary.AveragePeakRSSMB)
+	fmt.Printf("Go Heap Allocation:      %.3f MB\n", report.Summary.AverageHeapAllocMB)
+	fmt.Printf("Final RAM Increase:      %.3f MB\n", report.Summary.AverageRSSDeltaMB)
 	fmt.Printf("Outliers removed: %d\n", report.Summary.OutliersRemoved)
 	fmt.Println()
 

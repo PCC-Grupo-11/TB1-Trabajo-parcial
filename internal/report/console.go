@@ -15,6 +15,7 @@ func PrintReport(report model.Report) {
 
 	fmt.Println("=== EXECUTION PARAMS ===")
 	fmt.Printf("Mode: %s\n", report.ExecutionParams.Mode)
+	fmt.Printf("Input: %s\n", report.ExecutionParams.Input)
 	fmt.Printf("Runs: %d\n", report.ExecutionParams.Runs)
 	fmt.Printf("Goroutines: %d\n", report.ExecutionParams.Goroutines)
 	fmt.Println()
@@ -31,4 +32,24 @@ func PrintReport(report model.Report) {
 	fmt.Printf("Trimmed mean time (ms): %.3f\n", report.Summary.TrimmedMeanTimeMs)
 	fmt.Printf("Average RAM (MB): %.3f\n", report.Summary.AverageRamMB)
 	fmt.Printf("Outliers removed: %d\n", report.Summary.OutliersRemoved)
+	fmt.Println()
+
+	fmt.Println("=== DETECTION ===")
+	if len(report.DetectionResult.SuspiciousUsers) == 0 {
+		fmt.Println("Suspicious users: none")
+	} else {
+		fmt.Printf("Suspicious users: %v\n", report.DetectionResult.SuspiciousUsers)
+	}
+
+	if len(report.DetectionResult.SuspiciousTargets) == 0 {
+		fmt.Println("Suspicious targets: none")
+	} else {
+		fmt.Printf("Suspicious targets: %v\n", report.DetectionResult.SuspiciousTargets)
+	}
+
+	if len(report.DetectionResult.SuspiciousPairs) == 0 {
+		fmt.Println("Suspicious pairs: none")
+	} else {
+		fmt.Printf("Suspicious pairs: %v\n", report.DetectionResult.SuspiciousPairs)
+	}
 }

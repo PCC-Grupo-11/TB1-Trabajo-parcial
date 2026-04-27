@@ -24,7 +24,17 @@ func main() {
 		exitWithError(err)
 	}
 
-	iterations, err := benchmark.Run(cfg)
+	var iterations []model.Iteration
+	var detection model.DetectionResult
+
+	switch cfg.Mode {
+	case "sequential":
+		iterations, detection, err = benchmark.RunSequential(cfg)
+	case "concurrent":
+		iterations, detection, err = benchmark.RunConcurrent(cfg)
+	default:
+		exitWithError(fmt.Errorf("invalid mode %q", cfg.Mode))
+	}
 	if err != nil {
 		exitWithError(err)
 	}
@@ -35,12 +45,14 @@ func main() {
 		Timestamp:  time.Now().Format(time.RFC3339),
 		DeviceInfo: device,
 		ExecutionParams: model.ExecutionParams{
+			Input:      cfg.Input,
 			Mode:       cfg.Mode,
 			Runs:       cfg.Runs,
 			Goroutines: cfg.Goroutines,
 		},
-		Iterations: iterations,
-		Summary:    summary,
+		Iterations:      iterations,
+		Summary:         summary,
+		DetectionResult: detection,
 	}
 
 	filename, err := reportpkg.ExportJSON(reportObj)

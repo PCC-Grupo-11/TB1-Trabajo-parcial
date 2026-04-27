@@ -19,7 +19,7 @@ func newCountMaps() *countMaps {
 }
 
 func pairKey(left string, right string) string {
-	return left + "|" + right
+	return left + " || " + right
 }
 
 func emptyDetectionResult() model.DetectionResult {

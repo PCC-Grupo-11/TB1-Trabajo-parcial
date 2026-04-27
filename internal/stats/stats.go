@@ -7,6 +7,12 @@ import (
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
 )
 
+const (
+	userThresholdZScore   = 12.0
+	targetThresholdZScore = 2.0
+	pairThresholdZScore   = 20.0
+)
+
 func ComputeSummary(iterations []model.Iteration) model.Summary {
 	n := len(iterations)
 	if n == 0 {
@@ -91,9 +97,9 @@ func MergeShards(shards []*model.Shard) (userCounts, targetCounts, pairCounts, t
 }
 
 func DetectAnomalies(userCounts, targetCounts, pairCounts map[string]int) model.DetectionResult {
-	suspiciousUsers := detect(userCounts, 2.0)
-	suspiciousTargets := detect(targetCounts, 2.0)
-	suspiciousPairs := detect(pairCounts, 1.0)
+	suspiciousUsers := detect(userCounts, userThresholdZScore)
+	suspiciousTargets := detect(targetCounts, targetThresholdZScore)
+	suspiciousPairs := detect(pairCounts, pairThresholdZScore)
 
 	return model.DetectionResult{
 		SuspiciousUsers:   suspiciousUsers,

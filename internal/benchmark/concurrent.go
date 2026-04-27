@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
+	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/stats"
 )
 
 const fixedShardCount = 16
@@ -22,25 +23,28 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 		return nil, emptyDetectionResult(), fmt.Errorf("goroutines must be >= 1 for concurrent mode")
 	}
 
+	var finalDetection model.DetectionResult
 	iterations, err := runIterations(cfg.Runs, func() (float64, model.MemoryMetrics, error) {
 		runtime.GC()
 
-		_, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Goroutines)
+		detection, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Goroutines)
 		if err != nil {
 			return 0, model.MemoryMetrics{}, err
 		}
 
+		finalDetection = detection
 		return timeMs, memory, nil
 	})
 	if err != nil {
 		return nil, emptyDetectionResult(), err
 	}
 
-	return iterations, emptyDetectionResult(), nil
+	return iterations, finalDetection, nil
 }
 
-func runConcurrentIteration(inputPath string, goroutines int) ([]*model.Shard, float64, model.MemoryMetrics, error) {
+func runConcurrentIteration(inputPath string, goroutines int) (model.DetectionResult, float64, model.MemoryMetrics, error) {
 	shards := newShards(fixedShardCount)
+	detection := emptyDetectionResult()
 
 	timeMs, memory, err := Measure(func() error {
 		records := make(chan model.Record, goroutines*10)
@@ -76,13 +80,15 @@ func runConcurrentIteration(inputPath string, goroutines int) ([]*model.Shard, f
 			return err
 		}
 
+		userC, targetC, pairC, _ := stats.MergeShards(shards)
+		detection = stats.DetectAnomalies(userC, targetC, pairC)
 		return nil
 	})
 	if err != nil {
-		return nil, 0, model.MemoryMetrics{}, err
+		return emptyDetectionResult(), 0, model.MemoryMetrics{}, err
 	}
 
-	return shards, timeMs, memory, nil
+	return detection, timeMs, memory, nil
 }
 
 func newShards(k int) []*model.Shard {

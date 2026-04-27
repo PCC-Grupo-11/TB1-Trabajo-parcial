@@ -1,0 +1,70 @@
+package benchmark
+
+import (
+	"os"
+	"time"
+
+	"github.com/shirou/gopsutil/v4/process"
+)
+
+const rssSampleInterval = 10 * time.Millisecond
+
+func newRSSReader() (func() (uint64, error), error) {
+	proc, err := process.NewProcess(int32(os.Getpid()))
+	if err != nil {
+		return nil, err
+	}
+
+	return func() (uint64, error) {
+		memInfo, err := proc.MemoryInfo()
+		if err != nil {
+			return 0, err
+		}
+
+		return memInfo.RSS, nil
+	}, nil
+}
+
+func runWithPeakRSSSampling(
+	fn func() error,
+	baselineRSS uint64,
+	rssReader func() (uint64, error),
+) (elapsed time.Duration, peakRSS uint64, runErr error) {
+	stop := make(chan struct{})
+	peakRSSCh := make(chan uint64, 1)
+
+	go func() {
+		peak := baselineRSS
+		ticker := time.NewTicker(rssSampleInterval)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				rss, sampleErr := rssReader()
+				if sampleErr == nil {
+					peak = maxUint64(peak, rss)
+				}
+			case <-stop:
+				peakRSSCh <- peak
+				return
+			}
+		}
+	}()
+
+	start := time.Now()
+	runErr = fn()
+	elapsed = time.Since(start)
+
+	close(stop)
+	peakRSS = <-peakRSSCh
+
+	return elapsed, peakRSS, runErr
+}
+
+func maxUint64(a uint64, b uint64) uint64 {
+	if a >= b {
+		return a
+	}
+	return b
+}

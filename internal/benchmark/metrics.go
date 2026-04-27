@@ -2,59 +2,32 @@ package benchmark
 
 import (
 	"fmt"
-	"os"
 	"runtime"
-	"time"
 
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
-	"github.com/shirou/gopsutil/v4/process"
 )
 
-const (
-	bytesPerMB        = 1024 * 1024
-	rssSampleInterval = 10 * time.Millisecond
-)
+const bytesPerMB = 1024 * 1024
 
 func Measure(fn func() error) (timeMs float64, memory model.MemoryMetrics, err error) {
 	beforeHeap := readHeapAllocBytes()
-	beforeRSS, err := readProcessRSSBytes()
+
+	rssReader, err := newRSSReader()
+	if err != nil {
+		return 0, model.MemoryMetrics{}, fmt.Errorf("create process rss reader: %w", err)
+	}
+
+	beforeRSS, err := rssReader()
 	if err != nil {
 		return 0, model.MemoryMetrics{}, fmt.Errorf("read process rss before run: %w", err)
 	}
 
-	peakRSS := beforeRSS
-	done := make(chan struct{})
-	stopped := make(chan struct{})
-
-	go func() {
-		ticker := time.NewTicker(rssSampleInterval)
-		defer ticker.Stop()
-		defer close(stopped)
-
-		for {
-			select {
-			case <-ticker.C:
-				rss, sampleErr := readProcessRSSBytes()
-				if sampleErr == nil && rss > peakRSS {
-					peakRSS = rss
-				}
-			case <-done:
-				return
-			}
-		}
-	}()
-
-	start := time.Now()
-	runErr := fn()
-	elapsed := time.Since(start)
+	elapsed, peakRSS, runErr := runWithPeakRSSSampling(fn, beforeRSS, rssReader)
 	timeMs = float64(elapsed.Nanoseconds()) / 1e6
-
-	close(done)
-	<-stopped
 
 	afterHeap := readHeapAllocBytes()
 
-	afterRSS, rssErr := readProcessRSSBytes()
+	afterRSS, rssErr := rssReader()
 	if rssErr != nil {
 		if runErr != nil {
 			return timeMs, model.MemoryMetrics{}, runErr
@@ -62,9 +35,7 @@ func Measure(fn func() error) (timeMs float64, memory model.MemoryMetrics, err e
 		return timeMs, model.MemoryMetrics{}, fmt.Errorf("read process rss after run: %w", rssErr)
 	}
 
-	if afterRSS > peakRSS {
-		peakRSS = afterRSS
-	}
+	peakRSS = maxUint64(peakRSS, afterRSS)
 
 	memory = model.MemoryMetrics{
 		HeapAllocMB: toDeltaMB(beforeHeap, afterHeap),
@@ -73,20 +44,6 @@ func Measure(fn func() error) (timeMs float64, memory model.MemoryMetrics, err e
 	}
 
 	return timeMs, memory, runErr
-}
-
-func readProcessRSSBytes() (uint64, error) {
-	proc, err := process.NewProcess(int32(os.Getpid()))
-	if err != nil {
-		return 0, err
-	}
-
-	memInfo, err := proc.MemoryInfo()
-	if err != nil {
-		return 0, err
-	}
-
-	return memInfo.RSS, nil
 }
 
 func readHeapAllocBytes() uint64 {

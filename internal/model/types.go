@@ -44,18 +44,26 @@ type ExecutionParams struct {
 	Goroutines int    `json:"goroutines"`
 }
 
+type MemoryMetrics struct {
+	HeapAllocMB float64 `json:"heap_alloc_mb"`
+	RSSDeltaMB  float64 `json:"rss_delta_mb"`
+	PeakRSSMB   float64 `json:"peak_rss_mb"`
+}
+
 type Iteration struct {
 	Iteration int     `json:"iteration"`
 	TimeMs    float64 `json:"time_ms"`
-	RamMB     float64 `json:"ram_mb"`
+	MemoryMetrics
 }
 
 type Summary struct {
-	TotalRuns         int     `json:"total_runs"`
-	MeanTimeMs        float64 `json:"mean_time_ms"`
-	TrimmedMeanTimeMs float64 `json:"trimmed_mean_time_ms"`
-	AverageRamMB      float64 `json:"average_ram_mb"`
-	OutliersRemoved   int     `json:"outliers_removed"`
+	TotalRuns          int     `json:"total_runs"`
+	MeanTimeMs         float64 `json:"mean_time_ms"`
+	TrimmedMeanTimeMs  float64 `json:"trimmed_mean_time_ms"`
+	AverageHeapAllocMB float64 `json:"average_heap_alloc_mb"`
+	AverageRSSDeltaMB  float64 `json:"average_rss_delta_mb"`
+	AveragePeakRSSMB   float64 `json:"average_peak_rss_mb"`
+	OutliersRemoved    int     `json:"outliers_removed"`
 }
 
 type Report struct {

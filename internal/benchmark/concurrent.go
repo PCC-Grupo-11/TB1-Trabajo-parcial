@@ -22,15 +22,15 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 		return nil, emptyDetectionResult(), fmt.Errorf("goroutines must be >= 1 for concurrent mode")
 	}
 
-	iterations, err := runIterations(cfg.Runs, func() (float64, float64, error) {
+	iterations, err := runIterations(cfg.Runs, func() (float64, model.MemoryMetrics, error) {
 		runtime.GC()
 
-		_, timeMs, ramMB, err := runConcurrentIteration(cfg.Input, cfg.Goroutines)
+		_, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Goroutines)
 		if err != nil {
-			return 0, 0, err
+			return 0, model.MemoryMetrics{}, err
 		}
 
-		return timeMs, ramMB, nil
+		return timeMs, memory, nil
 	})
 	if err != nil {
 		return nil, emptyDetectionResult(), err
@@ -39,10 +39,10 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	return iterations, emptyDetectionResult(), nil
 }
 
-func runConcurrentIteration(inputPath string, goroutines int) ([]*model.Shard, float64, float64, error) {
+func runConcurrentIteration(inputPath string, goroutines int) ([]*model.Shard, float64, model.MemoryMetrics, error) {
 	shards := newShards(fixedShardCount)
 
-	timeMs, ramMB, err := Measure(func() error {
+	timeMs, memory, err := Measure(func() error {
 		records := make(chan model.Record, goroutines*10)
 		errCh := make(chan error, 1)
 
@@ -79,10 +79,10 @@ func runConcurrentIteration(inputPath string, goroutines int) ([]*model.Shard, f
 		return nil
 	})
 	if err != nil {
-		return nil, 0, 0, err
+		return nil, 0, model.MemoryMetrics{}, err
 	}
 
-	return shards, timeMs, ramMB, nil
+	return shards, timeMs, memory, nil
 }
 
 func newShards(k int) []*model.Shard {

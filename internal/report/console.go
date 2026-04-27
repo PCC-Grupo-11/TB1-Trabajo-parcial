@@ -27,7 +27,13 @@ func PrintReport(report model.Report) {
 
 	fmt.Println("=== ITERATIONS ===")
 	for _, it := range report.Iterations {
-		fmt.Printf("Iteration %d | time_ms=%.3f | ram_mb=%.3f\n", it.Iteration, it.TimeMs, it.RamMB)
+		fmt.Printf("Iteration %d | time_ms=%.3f | heap_alloc_mb=%.3f | rss_delta_mb=%.3f | peak_rss_mb=%.3f\n",
+			it.Iteration,
+			it.TimeMs,
+			it.HeapAllocMB,
+			it.RSSDeltaMB,
+			it.PeakRSSMB,
+		)
 	}
 	fmt.Println()
 
@@ -35,7 +41,9 @@ func PrintReport(report model.Report) {
 	fmt.Printf("Total runs: %d\n", report.Summary.TotalRuns)
 	fmt.Printf("Mean time (ms): %.3f\n", report.Summary.MeanTimeMs)
 	fmt.Printf("Trimmed mean time (ms): %.3f\n", report.Summary.TrimmedMeanTimeMs)
-	fmt.Printf("Average RAM (MB): %.3f\n", report.Summary.AverageRamMB)
+	fmt.Printf("Average RAM (Heap Alloc): %.3f MB\n", report.Summary.AverageHeapAllocMB)
+	fmt.Printf("Average RAM (RSS):        %.3f MB\n", report.Summary.AverageRSSDeltaMB)
+	fmt.Printf("Average RAM (Peak RSS):   %.3f MB\n", report.Summary.AveragePeakRSSMB)
 	fmt.Printf("Outliers removed: %d\n", report.Summary.OutliersRemoved)
 	fmt.Println()
 

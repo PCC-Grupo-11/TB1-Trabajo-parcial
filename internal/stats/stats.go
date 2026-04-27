@@ -14,12 +14,16 @@ func ComputeSummary(iterations []model.Iteration) model.Summary {
 
 	times := make([]float64, 0, n)
 	totalTime := 0.0
-	totalRAM := 0.0
+	totalHeapAlloc := 0.0
+	totalRSSDelta := 0.0
+	totalPeakRSS := 0.0
 
 	for _, it := range iterations {
 		times = append(times, it.TimeMs)
 		totalTime += it.TimeMs
-		totalRAM += it.RamMB
+		totalHeapAlloc += it.HeapAllocMB
+		totalRSSDelta += it.RSSDeltaMB
+		totalPeakRSS += it.PeakRSSMB
 	}
 
 	sort.Float64s(times)
@@ -40,11 +44,13 @@ func ComputeSummary(iterations []model.Iteration) model.Summary {
 	outliersRemoved := n - len(trimmed)
 
 	return model.Summary{
-		TotalRuns:         n,
-		MeanTimeMs:        totalTime / float64(n),
-		TrimmedMeanTimeMs: average(trimmed),
-		AverageRamMB:      totalRAM / float64(n),
-		OutliersRemoved:   outliersRemoved,
+		TotalRuns:          n,
+		MeanTimeMs:         totalTime / float64(n),
+		TrimmedMeanTimeMs:  average(trimmed),
+		AverageHeapAllocMB: totalHeapAlloc / float64(n),
+		AverageRSSDeltaMB:  totalRSSDelta / float64(n),
+		AveragePeakRSSMB:   totalPeakRSS / float64(n),
+		OutliersRemoved:    outliersRemoved,
 	}
 }
 

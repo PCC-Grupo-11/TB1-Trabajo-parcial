@@ -15,20 +15,18 @@ func RunSequential(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 		return nil, emptyDetectionResult(), fmt.Errorf("RunSequential requires mode=sequential")
 	}
 
-	iterations := make([]model.Iteration, 0, cfg.Runs)
-	for i := 0; i < cfg.Runs; i++ {
+	iterations, err := runIterations(cfg.Runs, func() (float64, float64, error) {
 		runtime.GC()
 
 		_, timeMs, ramMB, err := runSequentialIteration(cfg.Input)
 		if err != nil {
-			return nil, emptyDetectionResult(), err
+			return 0, 0, err
 		}
 
-		iterations = append(iterations, model.Iteration{
-			Iteration: i + 1,
-			TimeMs:    timeMs,
-			RamMB:     ramMB,
-		})
+		return timeMs, ramMB, nil
+	})
+	if err != nil {
+		return nil, emptyDetectionResult(), err
 	}
 
 	return iterations, emptyDetectionResult(), nil
@@ -36,7 +34,7 @@ func RunSequential(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 
 func runSequentialIteration(inputPath string) (*countMaps, float64, float64, error) {
 	counts := newCountMaps()
-	timeMs, ramMB, err := MeasureWithError(func() error {
+	timeMs, ramMB, err := Measure(func() error {
 		records := make(chan model.Record, 1024)
 		errCh := make(chan error, 1)
 

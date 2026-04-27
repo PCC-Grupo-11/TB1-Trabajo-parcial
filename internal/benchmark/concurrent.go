@@ -22,20 +22,18 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 		return nil, emptyDetectionResult(), fmt.Errorf("goroutines must be >= 1 for concurrent mode")
 	}
 
-	iterations := make([]model.Iteration, 0, cfg.Runs)
-	for i := 0; i < cfg.Runs; i++ {
+	iterations, err := runIterations(cfg.Runs, func() (float64, float64, error) {
 		runtime.GC()
 
 		_, timeMs, ramMB, err := runConcurrentIteration(cfg.Input, cfg.Goroutines)
 		if err != nil {
-			return nil, emptyDetectionResult(), err
+			return 0, 0, err
 		}
 
-		iterations = append(iterations, model.Iteration{
-			Iteration: i + 1,
-			TimeMs:    timeMs,
-			RamMB:     ramMB,
-		})
+		return timeMs, ramMB, nil
+	})
+	if err != nil {
+		return nil, emptyDetectionResult(), err
 	}
 
 	return iterations, emptyDetectionResult(), nil
@@ -44,7 +42,7 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 func runConcurrentIteration(inputPath string, goroutines int) ([]*model.Shard, float64, float64, error) {
 	shards := newShards(fixedShardCount)
 
-	timeMs, ramMB, err := MeasureWithError(func() error {
+	timeMs, ramMB, err := Measure(func() error {
 		records := make(chan model.Record, goroutines*10)
 		errCh := make(chan error, 1)
 

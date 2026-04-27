@@ -18,7 +18,11 @@ func PrintReport(report model.Report) {
 	fmt.Printf("Mode: %s\n", report.ExecutionParams.Mode)
 	fmt.Printf("Input: %s\n", report.ExecutionParams.Input)
 	fmt.Printf("Runs: %d\n", report.ExecutionParams.Runs)
-	fmt.Printf("Goroutines: %d\n", report.ExecutionParams.Goroutines)
+	if report.ExecutionParams.Mode == "sequential" {
+		fmt.Println("Goroutines: -")
+	} else {
+		fmt.Printf("Goroutines: %d\n", report.ExecutionParams.Goroutines)
+	}
 	fmt.Println()
 
 	fmt.Println("=== ITERATIONS ===")

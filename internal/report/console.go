@@ -48,21 +48,16 @@ func PrintReport(report model.Report) {
 	fmt.Println()
 
 	fmt.Println("=== DETECTION ===")
-	if len(report.DetectionResult.SuspiciousUsers) == 0 {
-		fmt.Println("Suspicious users: none")
-	} else {
-		fmt.Printf("Suspicious users: %v\n", report.DetectionResult.SuspiciousUsers)
+	printSuspiciousList("Suspicious users", report.DetectionResult.SuspiciousUsers)
+	printSuspiciousList("Suspicious targets", report.DetectionResult.SuspiciousTargets)
+	printSuspiciousList("Suspicious pairs", report.DetectionResult.SuspiciousPairs)
+}
+
+func printSuspiciousList(label string, values []string) {
+	if len(values) == 0 {
+		fmt.Printf("%s: none\n", label)
+		return
 	}
 
-	if len(report.DetectionResult.SuspiciousTargets) == 0 {
-		fmt.Println("Suspicious targets: none")
-	} else {
-		fmt.Printf("Suspicious targets: %v\n", report.DetectionResult.SuspiciousTargets)
-	}
-
-	if len(report.DetectionResult.SuspiciousPairs) == 0 {
-		fmt.Println("Suspicious pairs: none")
-	} else {
-		fmt.Printf("Suspicious pairs: %v\n", report.DetectionResult.SuspiciousPairs)
-	}
+	fmt.Printf("%s: %v\n", label, values)
 }

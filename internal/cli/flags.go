@@ -69,14 +69,10 @@ func ParseArgs(args []string) (model.Config, error) {
 	runsFlag := &intFlag{value: 1}
 	goroutinesFlag := &intFlag{value: 4}
 
-	fs.Var(modeFlag, "m", "execution mode")
-	fs.Var(modeFlag, "mode", "execution mode")
-	fs.Var(inputFlag, "i", "dataset path")
-	fs.Var(inputFlag, "input", "dataset path")
-	fs.Var(runsFlag, "n", "number of runs")
-	fs.Var(runsFlag, "runs", "number of runs")
-	fs.Var(goroutinesFlag, "g", "number of goroutines")
-	fs.Var(goroutinesFlag, "goroutines", "number of goroutines")
+	registerFlag(fs, modeFlag, "m", "mode", "execution mode")
+	registerFlag(fs, inputFlag, "i", "input", "dataset path")
+	registerFlag(fs, runsFlag, "n", "runs", "number of runs")
+	registerFlag(fs, goroutinesFlag, "g", "goroutines", "number of goroutines")
 
 	if err := fs.Parse(args); err != nil {
 		return model.Config{}, fmt.Errorf("%w\n\n%s", err, usageText)
@@ -119,4 +115,9 @@ func ParseArgs(args []string) (model.Config, error) {
 	cfg.Goroutines = goroutinesFlag.value
 
 	return cfg, nil
+}
+
+func registerFlag(fs *flag.FlagSet, value flag.Value, shortName string, longName string, usage string) {
+	fs.Var(value, shortName, usage)
+	fs.Var(value, longName, usage)
 }

@@ -14,6 +14,7 @@ func PrintReport(report model.Report) {
 	fmt.Println()
 
 	fmt.Println("=== EXECUTION PARAMS ===")
+	fmt.Printf("Command: %s\n", report.ExecutionParams.Command)
 	fmt.Printf("Mode: %s\n", report.ExecutionParams.Mode)
 	fmt.Printf("Input: %s\n", report.ExecutionParams.Input)
 	fmt.Printf("Runs: %d\n", report.ExecutionParams.Runs)

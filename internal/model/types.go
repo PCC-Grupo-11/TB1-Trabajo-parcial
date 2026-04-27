@@ -37,6 +37,7 @@ type DeviceInfo struct {
 }
 
 type ExecutionParams struct {
+	Command    string `json:"command"`
 	Mode       string `json:"mode"`
 	Input      string `json:"input"`
 	Runs       int    `json:"runs"`

@@ -24,17 +24,7 @@ func main() {
 		exitWithError(err)
 	}
 
-	var iterations []model.Iteration
-	var detection model.DetectionResult
-
-	switch cfg.Mode {
-	case "sequential":
-		iterations, detection, err = benchmark.RunSequential(cfg)
-	case "concurrent":
-		iterations, detection, err = benchmark.RunConcurrent(cfg)
-	default:
-		exitWithError(fmt.Errorf("invalid mode %q", cfg.Mode))
-	}
+	iterations, detection, err := benchmark.Run(cfg)
 	if err != nil {
 		exitWithError(err)
 	}
@@ -45,6 +35,7 @@ func main() {
 		Timestamp:  time.Now().Format(time.RFC3339),
 		DeviceInfo: device,
 		ExecutionParams: model.ExecutionParams{
+			Command:    cli.BuildCommand(os.Args),
 			Input:      cfg.Input,
 			Mode:       cfg.Mode,
 			Runs:       cfg.Runs,

@@ -38,13 +38,13 @@ func PrintReport(report model.Report) {
 	fmt.Println()
 
 	fmt.Println("=== SUMMARY ===")
-	fmt.Printf("Total runs: %d\n", report.Summary.TotalRuns)
-	fmt.Printf("Mean time (ms): %.3f\n", report.Summary.MeanTimeMs)
-	fmt.Printf("Trimmed mean time (ms): %.3f\n", report.Summary.TrimmedMeanTimeMs)
+	fmt.Printf("Total runs:              %d\n", report.Summary.TotalRuns)
+	fmt.Printf("Mean time (ms):          %.3f\n", report.Summary.MeanTimeMs)
+	fmt.Printf("Trimmed mean time (ms):  %.3f\n", report.Summary.TrimmedMeanTimeMs)
 	fmt.Printf("Peak RAM Usage (RSS):    %.3f MB\n", report.Summary.AveragePeakRSSMB)
 	fmt.Printf("Go Heap Allocation:      %.3f MB\n", report.Summary.AverageHeapAllocMB)
 	fmt.Printf("Final RAM Increase:      %.3f MB\n", report.Summary.AverageRSSDeltaMB)
-	fmt.Printf("Outliers removed: %d\n", report.Summary.OutliersRemoved)
+	fmt.Printf("Outliers removed:        %d\n", report.Summary.OutliersRemoved)
 	fmt.Println()
 
 	fmt.Println("=== DETECTION ===")

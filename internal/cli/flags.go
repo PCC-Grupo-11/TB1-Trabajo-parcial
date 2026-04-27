@@ -12,12 +12,12 @@ import (
 )
 
 const usageText = `Usage:
-	benchmark -m <sequential|concurrent> --input <dataset.csv> [-n runs] [-g goroutines]
+	benchmark -m <sequential|concurrent> -i <dataset.csv> [-n runs] [-g goroutines]
 	benchmark --mode <sequential|concurrent> --input <dataset.csv> [--runs runs] [--goroutines goroutines]
 
 Flags:
   -m, --mode         Required. Execution mode: sequential|concurrent
-	--input            Required. Dataset path
+  -i, --input        Required. Dataset path
   -n, --runs         Optional. Number of iterations (default 1)
   -g, --goroutines   Optional. Number of goroutines (default 4)
 `
@@ -71,6 +71,7 @@ func ParseArgs(args []string) (model.Config, error) {
 
 	fs.Var(modeFlag, "m", "execution mode")
 	fs.Var(modeFlag, "mode", "execution mode")
+	fs.Var(inputFlag, "i", "dataset path")
 	fs.Var(inputFlag, "input", "dataset path")
 	fs.Var(runsFlag, "n", "number of runs")
 	fs.Var(runsFlag, "runs", "number of runs")

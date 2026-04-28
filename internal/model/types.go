@@ -3,10 +3,11 @@ package model
 import "sync"
 
 type Config struct {
-	Mode       string `json:"mode"`
-	Input      string `json:"input"`
-	Runs       int    `json:"runs"`
-	Goroutines int    `json:"goroutines"`
+	Mode                   string `json:"mode"`
+	Input                  string `json:"input"`
+	Runs                   int    `json:"runs"`
+	Workers                int    `json:"workers"`
+	RecordBufferMultiplier int    `json:"record_buffer_multiplier"`
 }
 
 type Record struct {
@@ -38,11 +39,12 @@ type DeviceInfo struct {
 }
 
 type ExecutionParams struct {
-	Command    string `json:"command"`
-	Mode       string `json:"mode"`
-	Input      string `json:"input"`
-	Runs       int    `json:"runs"`
-	Goroutines int    `json:"goroutines"`
+	Command                string `json:"command"`
+	Mode                   string `json:"mode"`
+	Input                  string `json:"input"`
+	Runs                   int    `json:"runs"`
+	Workers                int    `json:"workers"`
+	RecordBufferMultiplier int    `json:"record_buffer_multiplier"`
 }
 
 type MemoryMetrics struct {

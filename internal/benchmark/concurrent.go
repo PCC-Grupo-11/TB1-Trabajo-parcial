@@ -16,15 +16,15 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	if cfg.Mode != "concurrent" {
 		return nil, emptyDetectionResult(), fmt.Errorf("RunConcurrent requires mode=concurrent")
 	}
-	if cfg.Goroutines < 1 {
-		return nil, emptyDetectionResult(), fmt.Errorf("goroutines must be >= 1 for concurrent mode")
+	if cfg.Workers < 1 {
+		return nil, emptyDetectionResult(), fmt.Errorf("workers must be >= 1 for concurrent mode")
 	}
 
 	var finalDetection model.DetectionResult
 	iterations, err := runIterations(cfg.Runs, func() (float64, model.MemoryMetrics, error) {
 		runtime.GC()
 
-		detection, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Goroutines)
+		detection, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Workers, cfg.RecordBufferMultiplier)
 		if err != nil {
 			return 0, model.MemoryMetrics{}, err
 		}
@@ -39,12 +39,16 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	return iterations, finalDetection, nil
 }
 
-func runConcurrentIteration(inputPath string, goroutines int) (model.DetectionResult, float64, model.MemoryMetrics, error) {
+func runConcurrentIteration(inputPath string, workers int, recordBufferMultiplier int) (model.DetectionResult, float64, model.MemoryMetrics, error) {
+	if recordBufferMultiplier < 1 {
+		return emptyDetectionResult(), 0, model.MemoryMetrics{}, fmt.Errorf("record buffer multiplier must be >= 1")
+	}
+
 	state := newGlobalState()
 	detection := emptyDetectionResult()
 
 	timeMs, memory, err := Measure(func() error {
-		records := make(chan model.Record, goroutines*100)
+		records := make(chan model.Record, workers*recordBufferMultiplier)
 		errCh := make(chan error, 1)
 
 		go func() {
@@ -52,8 +56,8 @@ func runConcurrentIteration(inputPath string, goroutines int) (model.DetectionRe
 		}()
 
 		var wg sync.WaitGroup
-		wg.Add(goroutines)
-		for i := 0; i < goroutines; i++ {
+		wg.Add(workers)
+		for i := 0; i < workers; i++ {
 			go func() {
 				defer wg.Done()
 				for record := range records {

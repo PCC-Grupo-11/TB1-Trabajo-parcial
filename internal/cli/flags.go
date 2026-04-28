@@ -12,20 +12,21 @@ import (
 )
 
 const (
-	defaultRuns       = 1
-	defaultGoroutines = 4
+	defaultRuns                   = 1
+	defaultWorkers                = 4
+	defaultRecordBufferMultiplier = 20
 )
 
 var usageText = fmt.Sprintf(`Usage:
-	benchmark -m <sequential|concurrent> -i <dataset.csv> [-n runs] [-g goroutines]
-	benchmark --mode <sequential|concurrent> --input <dataset.csv> [--runs runs] [--goroutines goroutines]
+	benchmark -m <sequential|concurrent> -i <dataset.csv> [-n runs] [-w workers]
+	benchmark --mode <sequential|concurrent> --input <dataset.csv> [--runs runs] [--workers workers]
 
 Flags:
   -m, --mode         Required. Execution mode: sequential|concurrent
   -i, --input        Required. Dataset path
   -n, --runs         Optional. Number of iterations (default %d)
-  -g, --goroutines   Optional. Number of goroutines (default %d)
-`, defaultRuns, defaultGoroutines)
+  -w, --workers      Optional. Number of workers (default %d)
+`, defaultRuns, defaultWorkers)
 
 type stringFlag struct {
 	value  string
@@ -72,12 +73,12 @@ func ParseArgs(args []string) (model.Config, error) {
 	modeFlag := &stringFlag{}
 	inputFlag := &stringFlag{}
 	runsFlag := &intFlag{value: defaultRuns}
-	goroutinesFlag := &intFlag{value: defaultGoroutines}
+	workersFlag := &intFlag{value: defaultWorkers}
 
 	registerFlag(fs, modeFlag, "m", "mode", "execution mode")
 	registerFlag(fs, inputFlag, "i", "input", "dataset path")
 	registerFlag(fs, runsFlag, "n", "runs", "number of runs")
-	registerFlag(fs, goroutinesFlag, "g", "goroutines", "number of goroutines")
+	registerFlag(fs, workersFlag, "w", "workers", "number of workers")
 
 	if err := fs.Parse(args); err != nil {
 		return model.Config{}, fmt.Errorf("%w\n\n%s", err, usageText)
@@ -101,22 +102,23 @@ func ParseArgs(args []string) (model.Config, error) {
 	}
 
 	cfg := model.Config{
-		Mode:  mode,
-		Input: strings.TrimSpace(inputFlag.value),
-		Runs:  runsFlag.value,
+		Mode:                   mode,
+		Input:                  strings.TrimSpace(inputFlag.value),
+		Runs:                   runsFlag.value,
+		RecordBufferMultiplier: defaultRecordBufferMultiplier,
 	}
 
 	switch mode {
 	case "sequential":
-		if goroutinesFlag.wasSet {
-			return model.Config{}, fmt.Errorf("goroutines is only valid in concurrent mode")
+		if workersFlag.wasSet {
+			return model.Config{}, fmt.Errorf("workers is only valid in concurrent mode")
 		}
-		cfg.Goroutines = 0
+		cfg.Workers = 0
 	case "concurrent":
-		if goroutinesFlag.value < 1 {
-			return model.Config{}, fmt.Errorf("goroutines must be >= 1")
+		if workersFlag.value < 1 {
+			return model.Config{}, fmt.Errorf("workers must be >= 1")
 		}
-		cfg.Goroutines = goroutinesFlag.value
+		cfg.Workers = workersFlag.value
 	}
 
 	return cfg, nil

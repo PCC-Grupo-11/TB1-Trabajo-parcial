@@ -28,10 +28,10 @@ func PrintReport(report model.Report) {
 
 	fmt.Println("=== ITERATIONS ===")
 	for _, it := range report.Iterations {
-		fmt.Printf("Iteration %d | time_ms=%.3f | peak_rss_mb=%.3f\n",
+		fmt.Printf("Iteration %d | time_ms=%.3f | max_rss_mb=%.3f\n",
 			it.Iteration,
 			it.TimeMs,
-			it.PeakRSSMB,
+			it.MaxRSSMB,
 		)
 	}
 	fmt.Println()
@@ -40,8 +40,8 @@ func PrintReport(report model.Report) {
 	fmt.Printf("Total runs:              %d\n", report.Summary.TotalRuns)
 	fmt.Printf("Mean time (ms):          %.3f\n", report.Summary.MeanTimeMs)
 	fmt.Printf("Trimmed mean time (ms):  %.3f\n", report.Summary.TrimmedMeanTimeMs)
-	fmt.Printf("Peak RAM usage (RSS):    %.3f MB\n", report.Summary.AveragePeakRSSMB)
-	fmt.Printf("Trimmed peak RAM (RSS):  %.3f MB\n", report.Summary.TrimmedPeakRSSMB)
+	fmt.Printf("Max RAM usage (RSS):     %.3f MB\n", report.Summary.AverageMaxRSSMB)
+	fmt.Printf("Trimmed max RAM (RSS):   %.3f MB\n", report.Summary.TrimmedMaxRSSMB)
 	fmt.Printf("Outliers removed:        %d\n", report.Summary.OutliersRemoved)
 	fmt.Println()
 

@@ -23,13 +23,13 @@ func ComputeSummary(iterations []model.Iteration) model.Summary {
 	times := make([]float64, 0, n)
 	rssValues := make([]float64, 0, n)
 	totalTime := 0.0
-	totalPeakRSS := 0.0
+	totalMaxRSS := 0.0
 
 	for _, it := range iterations {
 		times = append(times, it.TimeMs)
-		rssValues = append(rssValues, it.PeakRSSMB)
+		rssValues = append(rssValues, it.MaxRSSMB)
 		totalTime += it.TimeMs
-		totalPeakRSS += it.PeakRSSMB
+		totalMaxRSS += it.MaxRSSMB
 	}
 
 	sort.Float64s(times)
@@ -59,8 +59,8 @@ func ComputeSummary(iterations []model.Iteration) model.Summary {
 		TotalRuns:         n,
 		MeanTimeMs:        totalTime / float64(n),
 		TrimmedMeanTimeMs: average(trimmed),
-		AveragePeakRSSMB:  totalPeakRSS / float64(n),
-		TrimmedPeakRSSMB:  average(trimmedRSS),
+		AverageMaxRSSMB:   totalMaxRSS / float64(n),
+		TrimmedMaxRSSMB:   average(trimmedRSS),
 		OutliersRemoved:   outliersRemoved,
 	}
 }

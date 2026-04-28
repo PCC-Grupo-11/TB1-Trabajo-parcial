@@ -10,7 +10,7 @@ func Measure(fn func() error) (timeMs float64, memory model.MemoryMetrics, err e
 		return 0, model.MemoryMetrics{}, err
 	}
 
-	elapsed, peakRSS, runErr := runWithPeakRSSSampling(fn, rssReader)
+	elapsed, maxRSS, runErr := runWithMaxRSSSampling(fn, rssReader)
 	timeMs = float64(elapsed.Nanoseconds()) / 1e6
 
 	if runErr != nil {
@@ -18,7 +18,7 @@ func Measure(fn func() error) (timeMs float64, memory model.MemoryMetrics, err e
 	}
 
 	memory = model.MemoryMetrics{
-		PeakRSSMB: float64(peakRSS) / bytesPerMB,
+		MaxRSSMB: float64(maxRSS) / bytesPerMB,
 	}
 
 	return timeMs, memory, runErr

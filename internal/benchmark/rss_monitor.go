@@ -25,20 +25,20 @@ func newRSSReader() (func() (uint64, error), error) {
 	}, nil
 }
 
-func runWithPeakRSSSampling(
+func runWithMaxRSSSampling(
 	fn func() error,
 	rssReader func() (uint64, error),
-) (elapsed time.Duration, peakRSS uint64, runErr error) {
+) (elapsed time.Duration, maxRSS uint64, runErr error) {
 	baselineRSS, err := rssReader()
 	if err != nil {
 		return 0, 0, err
 	}
 
 	stop := make(chan struct{})
-	peakRSSCh := make(chan uint64, 1)
+	maxRSSCh := make(chan uint64, 1)
 
 	go func() {
-		peak := baselineRSS
+		max := baselineRSS
 		ticker := time.NewTicker(rssSampleInterval)
 		defer ticker.Stop()
 
@@ -47,10 +47,10 @@ func runWithPeakRSSSampling(
 			case <-ticker.C:
 				rss, sampleErr := rssReader()
 				if sampleErr == nil {
-					peak = maxUint64(peak, rss)
+					max = maxUint64(max, rss)
 				}
 			case <-stop:
-				peakRSSCh <- peak
+				maxRSSCh <- max
 				return
 			}
 		}
@@ -61,9 +61,9 @@ func runWithPeakRSSSampling(
 	elapsed = time.Since(start)
 
 	close(stop)
-	peakRSS = <-peakRSSCh
+	maxRSS = <-maxRSSCh
 
-	return elapsed, peakRSS, runErr
+	return elapsed, maxRSS, runErr
 }
 
 func maxUint64(a uint64, b uint64) uint64 {

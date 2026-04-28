@@ -2,8 +2,8 @@ package benchmark
 
 import "github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
 
-func newCountSet() *model.CountSet {
-	return &model.CountSet{
+func newGlobalState() *model.GlobalState {
+	return &model.GlobalState{
 		UserCounts:   make(map[string]int),
 		TargetCounts: make(map[string]int),
 		PairCounts:   make(map[string]int),
@@ -20,5 +20,6 @@ func emptyDetectionResult() model.DetectionResult {
 		SuspiciousUsers:   []string{},
 		SuspiciousTargets: []string{},
 		SuspiciousPairs:   []string{},
+		SuspiciousTypes:   []string{},
 	}
 }

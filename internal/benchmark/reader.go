@@ -13,6 +13,14 @@ import (
 func StreamRecords(path string, out chan<- model.Record) error {
 	defer close(out)
 
+	return forEachRecord(path, func(record model.Record) error {
+		out <- record
+		return nil
+	})
+}
+
+func forEachRecord(path string, handle func(model.Record) error) error {
+
 	file, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("open input file: %w", err)
@@ -47,10 +55,12 @@ func StreamRecords(path string, out chan<- model.Record) error {
 			continue
 		}
 
-		out <- model.Record{
+		if err := handle(model.Record{
 			UserKey:   strings.TrimSpace(row[userIdx]),
 			TargetKey: strings.TrimSpace(row[targetIdx]),
 			TypeKey:   strings.TrimSpace(row[typeIdx]),
+		}); err != nil {
+			return err
 		}
 	}
 

@@ -36,29 +36,20 @@ func RunSequential(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 }
 
 func runSequentialIteration(inputPath string) (model.DetectionResult, float64, model.MemoryMetrics, error) {
-	counts := newCountSet()
+	state := newGlobalState()
 	detection := emptyDetectionResult()
 	timeMs, memory, err := Measure(func() error {
-		records := make(chan model.Record, 1024)
-		errCh := make(chan error, 1)
-
-		go func() {
-			errCh <- StreamRecords(inputPath, records)
-			close(errCh)
-		}()
-
-		for record := range records {
-			counts.UserCounts[record.UserKey]++
-			counts.TargetCounts[record.TargetKey]++
-			counts.PairCounts[pairKey(record.UserKey, record.TargetKey)]++
-			counts.TypeCounts[pairKey(record.UserKey, record.TypeKey)]++
-		}
-
-		if err := <-errCh; err != nil {
+		if err := forEachRecord(inputPath, func(record model.Record) error {
+			state.UserCounts[record.UserKey]++
+			state.TargetCounts[record.TargetKey]++
+			state.PairCounts[pairKey(record.UserKey, record.TargetKey)]++
+			state.TypeCounts[pairKey(record.UserKey, record.TypeKey)]++
+			return nil
+		}); err != nil {
 			return err
 		}
 
-		detection = stats.DetectAnomalies(counts.UserCounts, counts.TargetCounts, counts.PairCounts)
+		detection = stats.DetectAnomalies(state.UserCounts, state.TargetCounts, state.PairCounts, state.TypeCounts)
 		return nil
 	})
 	if err != nil {

@@ -11,6 +11,7 @@ const (
 	userThresholdZScore   = 12.0
 	targetThresholdZScore = 2.0
 	pairThresholdZScore   = 20.0
+	typeThresholdZScore   = 2.0
 )
 
 func ComputeSummary(iterations []model.Iteration) model.Summary {
@@ -73,38 +74,17 @@ func average(values []float64) float64 {
 	return total / float64(len(values))
 }
 
-func MergeShards(shards []*model.Shard) (userCounts, targetCounts, pairCounts, typeCounts map[string]int) {
-	userCounts = make(map[string]int)
-	targetCounts = make(map[string]int)
-	pairCounts = make(map[string]int)
-	typeCounts = make(map[string]int)
-
-	for _, shard := range shards {
-		for k, v := range shard.UserCounts {
-			userCounts[k] += v
-		}
-		for k, v := range shard.TargetCounts {
-			targetCounts[k] += v
-		}
-		for k, v := range shard.PairCounts {
-			pairCounts[k] += v
-		}
-		for k, v := range shard.TypeCounts {
-			typeCounts[k] += v
-		}
-	}
-	return
-}
-
-func DetectAnomalies(userCounts, targetCounts, pairCounts map[string]int) model.DetectionResult {
+func DetectAnomalies(userCounts, targetCounts, pairCounts, typeCounts map[string]int) model.DetectionResult {
 	suspiciousUsers := detect(userCounts, userThresholdZScore)
 	suspiciousTargets := detect(targetCounts, targetThresholdZScore)
 	suspiciousPairs := detect(pairCounts, pairThresholdZScore)
+	suspiciousTypes := detect(typeCounts, typeThresholdZScore)
 
 	return model.DetectionResult{
 		SuspiciousUsers:   suspiciousUsers,
 		SuspiciousTargets: suspiciousTargets,
 		SuspiciousPairs:   suspiciousPairs,
+		SuspiciousTypes:   suspiciousTypes,
 	}
 }
 

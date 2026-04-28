@@ -51,6 +51,7 @@ func PrintReport(report model.Report) {
 	printSuspiciousList("Suspicious users", report.DetectionResult.SuspiciousUsers)
 	printSuspiciousList("Suspicious targets", report.DetectionResult.SuspiciousTargets)
 	printSuspiciousList("Suspicious pairs", report.DetectionResult.SuspiciousPairs)
+	printSuspiciousList("Suspicious types", report.DetectionResult.SuspiciousTypes)
 }
 
 func printSuspiciousList(label string, values []string) {

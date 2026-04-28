@@ -2,15 +2,12 @@ package benchmark
 
 import (
 	"fmt"
-	"hash/fnv"
 	"runtime"
 	"sync"
 
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/stats"
 )
-
-const fixedShardCount = 16
 
 func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, error) {
 	if cfg.Runs < 1 {
@@ -43,16 +40,15 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 }
 
 func runConcurrentIteration(inputPath string, goroutines int) (model.DetectionResult, float64, model.MemoryMetrics, error) {
-	shards := newShards(fixedShardCount)
+	state := newGlobalState()
 	detection := emptyDetectionResult()
 
 	timeMs, memory, err := Measure(func() error {
-		records := make(chan model.Record, goroutines*10)
+		records := make(chan model.Record, goroutines*100)
 		errCh := make(chan error, 1)
 
 		go func() {
 			errCh <- StreamRecords(inputPath, records)
-			close(errCh)
 		}()
 
 		var wg sync.WaitGroup
@@ -61,15 +57,12 @@ func runConcurrentIteration(inputPath string, goroutines int) (model.DetectionRe
 			go func() {
 				defer wg.Done()
 				for record := range records {
-					idx := shardIndex(record.UserKey, len(shards))
-					shard := shards[idx]
-
-					shard.Mu.Lock()
-					shard.UserCounts[record.UserKey]++
-					shard.TargetCounts[record.TargetKey]++
-					shard.PairCounts[pairKey(record.UserKey, record.TargetKey)]++
-					shard.TypeCounts[pairKey(record.UserKey, record.TypeKey)]++
-					shard.Mu.Unlock()
+					state.Mu.Lock()
+					state.UserCounts[record.UserKey]++
+					state.TargetCounts[record.TargetKey]++
+					state.PairCounts[pairKey(record.UserKey, record.TargetKey)]++
+					state.TypeCounts[pairKey(record.UserKey, record.TypeKey)]++
+					state.Mu.Unlock()
 				}
 			}()
 		}
@@ -80,8 +73,7 @@ func runConcurrentIteration(inputPath string, goroutines int) (model.DetectionRe
 			return err
 		}
 
-		userC, targetC, pairC, _ := stats.MergeShards(shards)
-		detection = stats.DetectAnomalies(userC, targetC, pairC)
+		detection = stats.DetectAnomalies(state.UserCounts, state.TargetCounts, state.PairCounts, state.TypeCounts)
 		return nil
 	})
 	if err != nil {
@@ -89,29 +81,4 @@ func runConcurrentIteration(inputPath string, goroutines int) (model.DetectionRe
 	}
 
 	return detection, timeMs, memory, nil
-}
-
-func newShards(k int) []*model.Shard {
-	if k < 1 {
-		k = 1
-	}
-
-	shards := make([]*model.Shard, 0, k)
-	for i := 0; i < k; i++ {
-		shards = append(shards, &model.Shard{
-			CountSet: *newCountSet(),
-		})
-	}
-
-	return shards
-}
-
-func shardIndex(userKey string, shardCount int) int {
-	if shardCount <= 1 {
-		return 0
-	}
-
-	h := fnv.New32a()
-	_, _ = h.Write([]byte(userKey))
-	return int(h.Sum32() % uint32(shardCount))
 }

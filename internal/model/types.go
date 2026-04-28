@@ -15,22 +15,20 @@ type Record struct {
 	TypeKey   string
 }
 
-type DetectionResult struct {
-	SuspiciousUsers   []string `json:"suspicious_users"`
-	SuspiciousTargets []string `json:"suspicious_targets"`
-	SuspiciousPairs   []string `json:"suspicious_pairs"`
-}
+type GlobalState struct {
+	Mu sync.Mutex
 
-type CountSet struct {
 	UserCounts   map[string]int
 	TargetCounts map[string]int
 	PairCounts   map[string]int
 	TypeCounts   map[string]int
 }
 
-type Shard struct {
-	Mu sync.Mutex
-	CountSet
+type DetectionResult struct {
+	SuspiciousUsers   []string `json:"suspicious_users"`
+	SuspiciousTargets []string `json:"suspicious_targets"`
+	SuspiciousPairs   []string `json:"suspicious_pairs"`
+	SuspiciousTypes   []string `json:"suspicious_types"`
 }
 
 type DeviceInfo struct {

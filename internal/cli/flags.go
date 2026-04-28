@@ -11,16 +11,21 @@ import (
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
 )
 
-const usageText = `Usage:
+const (
+	defaultRuns       = 1
+	defaultGoroutines = 4
+)
+
+var usageText = fmt.Sprintf(`Usage:
 	benchmark -m <sequential|concurrent> -i <dataset.csv> [-n runs] [-g goroutines]
 	benchmark --mode <sequential|concurrent> --input <dataset.csv> [--runs runs] [--goroutines goroutines]
 
 Flags:
   -m, --mode         Required. Execution mode: sequential|concurrent
   -i, --input        Required. Dataset path
-  -n, --runs         Optional. Number of iterations (default 1)
-  -g, --goroutines   Optional. Number of goroutines (default 4)
-`
+  -n, --runs         Optional. Number of iterations (default %d)
+  -g, --goroutines   Optional. Number of goroutines (default %d)
+`, defaultRuns, defaultGoroutines)
 
 type stringFlag struct {
 	value  string
@@ -66,8 +71,8 @@ func ParseArgs(args []string) (model.Config, error) {
 
 	modeFlag := &stringFlag{}
 	inputFlag := &stringFlag{}
-	runsFlag := &intFlag{value: 1}
-	goroutinesFlag := &intFlag{value: 4}
+	runsFlag := &intFlag{value: defaultRuns}
+	goroutinesFlag := &intFlag{value: defaultGoroutines}
 
 	registerFlag(fs, modeFlag, "m", "mode", "execution mode")
 	registerFlag(fs, inputFlag, "i", "input", "dataset path")
@@ -101,18 +106,18 @@ func ParseArgs(args []string) (model.Config, error) {
 		Runs:  runsFlag.value,
 	}
 
-	if mode == "sequential" {
+	switch mode {
+	case "sequential":
 		if goroutinesFlag.wasSet {
 			return model.Config{}, fmt.Errorf("goroutines is only valid in concurrent mode")
 		}
-		cfg.Goroutines = 1
-		return cfg, nil
+		cfg.Goroutines = 0
+	case "concurrent":
+		if goroutinesFlag.value < 1 {
+			return model.Config{}, fmt.Errorf("goroutines must be >= 1")
+		}
+		cfg.Goroutines = goroutinesFlag.value
 	}
-
-	if goroutinesFlag.value < 1 {
-		return model.Config{}, fmt.Errorf("goroutines must be >= 1")
-	}
-	cfg.Goroutines = goroutinesFlag.value
 
 	return cfg, nil
 }

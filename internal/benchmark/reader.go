@@ -20,7 +20,6 @@ func StreamRecords(path string, out chan<- model.Record) error {
 }
 
 func forEachRecord(path string, handle func(model.Record) error) error {
-
 	file, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("open input file: %w", err)

@@ -46,9 +46,7 @@ type ExecutionParams struct {
 }
 
 type MemoryMetrics struct {
-	HeapAllocMB float64 `json:"heap_alloc_mb"`
-	RSSDeltaMB  float64 `json:"rss_delta_mb"`
-	PeakRSSMB   float64 `json:"peak_rss_mb"`
+	PeakRSSMB float64 `json:"peak_rss_mb"`
 }
 
 type Iteration struct {
@@ -58,13 +56,12 @@ type Iteration struct {
 }
 
 type Summary struct {
-	TotalRuns          int     `json:"total_runs"`
-	MeanTimeMs         float64 `json:"mean_time_ms"`
-	TrimmedMeanTimeMs  float64 `json:"trimmed_mean_time_ms"`
-	AverageHeapAllocMB float64 `json:"average_heap_alloc_mb"`
-	AverageRSSDeltaMB  float64 `json:"average_rss_delta_mb"`
-	AveragePeakRSSMB   float64 `json:"average_peak_rss_mb"`
-	OutliersRemoved    int     `json:"outliers_removed"`
+	TotalRuns         int     `json:"total_runs"`
+	MeanTimeMs        float64 `json:"mean_time_ms"`
+	TrimmedMeanTimeMs float64 `json:"trimmed_mean_time_ms"`
+	AveragePeakRSSMB  float64 `json:"average_peak_rss_mb"`
+	TrimmedPeakRSSMB  float64 `json:"trimmed_peak_rss_mb"`
+	OutliersRemoved   int     `json:"outliers_removed"`
 }
 
 type Report struct {

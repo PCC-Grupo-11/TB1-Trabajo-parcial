@@ -21,25 +21,24 @@ func ComputeSummary(iterations []model.Iteration) model.Summary {
 	}
 
 	times := make([]float64, 0, n)
+	rssValues := make([]float64, 0, n)
 	totalTime := 0.0
-	totalHeapAlloc := 0.0
-	totalRSSDelta := 0.0
 	totalPeakRSS := 0.0
 
 	for _, it := range iterations {
 		times = append(times, it.TimeMs)
+		rssValues = append(rssValues, it.PeakRSSMB)
 		totalTime += it.TimeMs
-		totalHeapAlloc += it.HeapAllocMB
-		totalRSSDelta += it.RSSDeltaMB
 		totalPeakRSS += it.PeakRSSMB
 	}
 
 	sort.Float64s(times)
+	sort.Float64s(rssValues)
 
 	k := 0
 	switch {
 	case n >= 10:
-		k = int(0.1 * float64(n))
+		k = int(0.2 * float64(n))
 	case n >= 5:
 		k = 1
 	}
@@ -49,16 +48,20 @@ func ComputeSummary(iterations []model.Iteration) model.Summary {
 		trimmed = times[k : n-k]
 	}
 
+	trimmedRSS := rssValues
+	if k > 0 && 2*k < n {
+		trimmedRSS = rssValues[k : n-k]
+	}
+
 	outliersRemoved := n - len(trimmed)
 
 	return model.Summary{
-		TotalRuns:          n,
-		MeanTimeMs:         totalTime / float64(n),
-		TrimmedMeanTimeMs:  average(trimmed),
-		AverageHeapAllocMB: totalHeapAlloc / float64(n),
-		AverageRSSDeltaMB:  totalRSSDelta / float64(n),
-		AveragePeakRSSMB:   totalPeakRSS / float64(n),
-		OutliersRemoved:    outliersRemoved,
+		TotalRuns:         n,
+		MeanTimeMs:        totalTime / float64(n),
+		TrimmedMeanTimeMs: average(trimmed),
+		AveragePeakRSSMB:  totalPeakRSS / float64(n),
+		TrimmedPeakRSSMB:  average(trimmedRSS),
+		OutliersRemoved:   outliersRemoved,
 	}
 }
 
@@ -74,11 +77,11 @@ func average(values []float64) float64 {
 	return total / float64(len(values))
 }
 
-func DetectAnomalies(userCounts, targetCounts, pairCounts, typeCounts map[string]int) model.DetectionResult {
-	suspiciousUsers := detect(userCounts, userThresholdZScore)
-	suspiciousTargets := detect(targetCounts, targetThresholdZScore)
-	suspiciousPairs := detect(pairCounts, pairThresholdZScore)
-	suspiciousTypes := detect(typeCounts, typeThresholdZScore)
+func DetectAnomalies(state *model.GlobalState) model.DetectionResult {
+	suspiciousUsers := detect(state.UserCounts, userThresholdZScore)
+	suspiciousTargets := detect(state.TargetCounts, targetThresholdZScore)
+	suspiciousPairs := detect(state.PairCounts, pairThresholdZScore)
+	suspiciousTypes := detect(state.TypeCounts, typeThresholdZScore)
 
 	return model.DetectionResult{
 		SuspiciousUsers:   suspiciousUsers,

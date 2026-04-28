@@ -73,7 +73,7 @@ func runConcurrentIteration(inputPath string, goroutines int) (model.DetectionRe
 			return err
 		}
 
-		detection = stats.DetectAnomalies(state.UserCounts, state.TargetCounts, state.PairCounts, state.TypeCounts)
+		detection = stats.DetectAnomalies(state)
 		return nil
 	})
 	if err != nil {

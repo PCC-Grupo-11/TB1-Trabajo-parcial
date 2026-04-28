@@ -27,9 +27,13 @@ func newRSSReader() (func() (uint64, error), error) {
 
 func runWithPeakRSSSampling(
 	fn func() error,
-	baselineRSS uint64,
 	rssReader func() (uint64, error),
 ) (elapsed time.Duration, peakRSS uint64, runErr error) {
+	baselineRSS, err := rssReader()
+	if err != nil {
+		return 0, 0, err
+	}
+
 	stop := make(chan struct{})
 	peakRSSCh := make(chan uint64, 1)
 

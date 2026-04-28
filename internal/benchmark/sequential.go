@@ -39,17 +39,12 @@ func runSequentialIteration(inputPath string) (model.DetectionResult, float64, m
 	state := newGlobalState()
 	detection := emptyDetectionResult()
 	timeMs, memory, err := Measure(func() error {
-		if err := forEachRecord(inputPath, func(record model.Record) error {
-			state.UserCounts[record.UserKey]++
-			state.TargetCounts[record.TargetKey]++
-			state.PairCounts[pairKey(record.UserKey, record.TargetKey)]++
-			state.TypeCounts[pairKey(record.UserKey, record.TypeKey)]++
-			return nil
-		}); err != nil {
+		err := countSequentialRecords(inputPath, state)
+		if err != nil {
 			return err
 		}
 
-		detection = stats.DetectAnomalies(state.UserCounts, state.TargetCounts, state.PairCounts, state.TypeCounts)
+		detection = stats.DetectAnomalies(state)
 		return nil
 	})
 	if err != nil {
@@ -57,4 +52,18 @@ func runSequentialIteration(inputPath string) (model.DetectionResult, float64, m
 	}
 
 	return detection, timeMs, memory, nil
+}
+
+func countSequentialRecords(inputPath string, state *model.GlobalState) error {
+	return forEachRecord(inputPath, func(record model.Record) error {
+		applyRecordCounts(state, record)
+		return nil
+	})
+}
+
+func applyRecordCounts(state *model.GlobalState, record model.Record) {
+	state.UserCounts[record.UserKey]++
+	state.TargetCounts[record.TargetKey]++
+	state.PairCounts[pairKey(record.UserKey, record.TargetKey)]++
+	state.TypeCounts[pairKey(record.UserKey, record.TypeKey)]++
 }

@@ -10,8 +10,8 @@ import (
 const (
 	userThresholdZScore   = 12.0
 	targetThresholdZScore = 2.0
-	pairThresholdZScore   = 20.0
-	typeThresholdZScore   = 2.0
+	pairThresholdZScore   = 22.0
+	typeThresholdZScore   = 15.0
 )
 
 func ComputeSummary(iterations []model.Iteration) model.Summary {

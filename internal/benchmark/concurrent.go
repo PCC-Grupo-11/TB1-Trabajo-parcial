@@ -99,10 +99,7 @@ func newShards(k int) []*model.Shard {
 	shards := make([]*model.Shard, 0, k)
 	for i := 0; i < k; i++ {
 		shards = append(shards, &model.Shard{
-			UserCounts:   make(map[string]int),
-			TargetCounts: make(map[string]int),
-			PairCounts:   make(map[string]int),
-			TypeCounts:   make(map[string]int),
+			CountSet: *newCountSet(),
 		})
 	}
 

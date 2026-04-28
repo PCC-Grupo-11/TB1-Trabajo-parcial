@@ -2,15 +2,8 @@ package benchmark
 
 import "github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
 
-type countMaps struct {
-	UserCounts   map[string]int
-	TargetCounts map[string]int
-	PairCounts   map[string]int
-	TypeCounts   map[string]int
-}
-
-func newCountMaps() *countMaps {
-	return &countMaps{
+func newCountSet() *model.CountSet {
+	return &model.CountSet{
 		UserCounts:   make(map[string]int),
 		TargetCounts: make(map[string]int),
 		PairCounts:   make(map[string]int),

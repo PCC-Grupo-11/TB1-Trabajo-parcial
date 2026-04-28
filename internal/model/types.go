@@ -21,13 +21,16 @@ type DetectionResult struct {
 	SuspiciousPairs   []string `json:"suspicious_pairs"`
 }
 
-type Shard struct {
-	Mu sync.Mutex
-
+type CountSet struct {
 	UserCounts   map[string]int
 	TargetCounts map[string]int
 	PairCounts   map[string]int
 	TypeCounts   map[string]int
+}
+
+type Shard struct {
+	Mu sync.Mutex
+	CountSet
 }
 
 type DeviceInfo struct {

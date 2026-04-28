@@ -36,7 +36,7 @@ func RunSequential(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 }
 
 func runSequentialIteration(inputPath string) (model.DetectionResult, float64, model.MemoryMetrics, error) {
-	counts := newCountMaps()
+	counts := newCountSet()
 	detection := emptyDetectionResult()
 	timeMs, memory, err := Measure(func() error {
 		records := make(chan model.Record, 1024)

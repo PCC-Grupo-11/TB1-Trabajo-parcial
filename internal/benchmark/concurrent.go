@@ -40,10 +40,6 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 }
 
 func runConcurrentIteration(inputPath string, workers int, recordBufferMultiplier int) (model.DetectionResult, float64, model.MemoryMetrics, error) {
-	if recordBufferMultiplier < 1 {
-		return emptyDetectionResult(), 0, model.MemoryMetrics{}, fmt.Errorf("record buffer multiplier must be >= 1")
-	}
-
 	state := newGlobalState()
 	detection := emptyDetectionResult()
 

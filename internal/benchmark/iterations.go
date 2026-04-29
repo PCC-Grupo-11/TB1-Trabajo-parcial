@@ -2,7 +2,7 @@ package benchmark
 
 import "github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
 
-func runIterations(runs int, iterationFn func() (timeMs float64, memory model.MemoryMetrics, err error)) ([]model.Iteration, error) {
+func runIterations(runs int, iterationFn func() (timeMs float64, memory model.Metrics, err error)) ([]model.Iteration, error) {
 	iterations := make([]model.Iteration, 0, runs)
 
 	for i := 0; i < runs; i++ {
@@ -12,9 +12,9 @@ func runIterations(runs int, iterationFn func() (timeMs float64, memory model.Me
 		}
 
 		iterations = append(iterations, model.Iteration{
-			Iteration:     i + 1,
-			TimeMs:        timeMs,
-			MemoryMetrics: memory,
+			Iteration: i + 1,
+			TimeMs:    timeMs,
+			Metrics:   memory,
 		})
 	}
 

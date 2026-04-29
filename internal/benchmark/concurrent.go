@@ -21,12 +21,12 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	}
 
 	var finalDetection model.DetectionResult
-	iterations, err := runIterations(cfg.Runs, func() (float64, model.MemoryMetrics, error) {
+	iterations, err := runIterations(cfg.Runs, func() (float64, model.Metrics, error) {
 		runtime.GC()
 
 		detection, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Workers, cfg.RecordBufferMultiplier)
 		if err != nil {
-			return 0, model.MemoryMetrics{}, err
+			return 0, model.Metrics{}, err
 		}
 
 		finalDetection = detection
@@ -39,7 +39,7 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	return iterations, finalDetection, nil
 }
 
-func runConcurrentIteration(inputPath string, workers int, recordBufferMultiplier int) (model.DetectionResult, float64, model.MemoryMetrics, error) {
+func runConcurrentIteration(inputPath string, workers int, recordBufferMultiplier int) (model.DetectionResult, float64, model.Metrics, error) {
 	state := newGlobalState()
 	detection := emptyDetectionResult()
 
@@ -77,7 +77,7 @@ func runConcurrentIteration(inputPath string, workers int, recordBufferMultiplie
 		return nil
 	})
 	if err != nil {
-		return emptyDetectionResult(), 0, model.MemoryMetrics{}, err
+		return emptyDetectionResult(), 0, model.Metrics{}, err
 	}
 
 	return detection, timeMs, memory, nil

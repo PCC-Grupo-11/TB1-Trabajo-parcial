@@ -17,12 +17,12 @@ func RunSequential(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	}
 
 	var finalDetection model.DetectionResult
-	iterations, err := runIterations(cfg.Runs, func() (float64, model.MemoryMetrics, error) {
+	iterations, err := runIterations(cfg.Runs, func() (float64, model.Metrics, error) {
 		runtime.GC()
 
 		detection, timeMs, memory, err := runSequentialIteration(cfg.Input)
 		if err != nil {
-			return 0, model.MemoryMetrics{}, err
+			return 0, model.Metrics{}, err
 		}
 
 		finalDetection = detection
@@ -35,7 +35,7 @@ func RunSequential(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	return iterations, finalDetection, nil
 }
 
-func runSequentialIteration(inputPath string) (model.DetectionResult, float64, model.MemoryMetrics, error) {
+func runSequentialIteration(inputPath string) (model.DetectionResult, float64, model.Metrics, error) {
 	state := newGlobalState()
 	detection := emptyDetectionResult()
 	timeMs, memory, err := Measure(func() error {
@@ -48,7 +48,7 @@ func runSequentialIteration(inputPath string) (model.DetectionResult, float64, m
 		return nil
 	})
 	if err != nil {
-		return emptyDetectionResult(), 0, model.MemoryMetrics{}, err
+		return emptyDetectionResult(), 0, model.Metrics{}, err
 	}
 
 	return detection, timeMs, memory, nil

@@ -5,12 +5,12 @@ import "github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
 const bytesPerMB = 1024 * 1024
 
 func Measure(fn func() error) (timeMs float64, memory model.MemoryMetrics, err error) {
-	rssReader, err := newRSSReader()
+	resourceReader, err := newResourceReader()
 	if err != nil {
 		return 0, model.MemoryMetrics{}, err
 	}
 
-	elapsed, maxRSS, runErr := runWithMaxRSSSampling(fn, rssReader)
+	elapsed, maxRSS, avgCPUPercent, runErr := runWithResourceSampling(fn, resourceReader)
 	timeMs = float64(elapsed.Nanoseconds()) / 1e6
 
 	if runErr != nil {
@@ -18,7 +18,8 @@ func Measure(fn func() error) (timeMs float64, memory model.MemoryMetrics, err e
 	}
 
 	memory = model.MemoryMetrics{
-		MaxRSSMB: float64(maxRSS) / bytesPerMB,
+		MaxRSSMB:      float64(maxRSS) / bytesPerMB,
+		AvgCPUPercent: avgCPUPercent,
 	}
 
 	return timeMs, memory, runErr

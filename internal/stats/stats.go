@@ -22,18 +22,23 @@ func ComputeSummary(iterations []model.Iteration) model.Summary {
 
 	times := make([]float64, 0, n)
 	rssValues := make([]float64, 0, n)
+	cpuValues := make([]float64, 0, n)
 	totalTime := 0.0
 	totalMaxRSS := 0.0
+	totalAvgCPU := 0.0
 
 	for _, it := range iterations {
 		times = append(times, it.TimeMs)
 		rssValues = append(rssValues, it.MaxRSSMB)
+		cpuValues = append(cpuValues, it.AvgCPUPercent)
 		totalTime += it.TimeMs
 		totalMaxRSS += it.MaxRSSMB
+		totalAvgCPU += it.AvgCPUPercent
 	}
 
 	sort.Float64s(times)
 	sort.Float64s(rssValues)
+	sort.Float64s(cpuValues)
 
 	k := 0
 	switch {
@@ -53,15 +58,22 @@ func ComputeSummary(iterations []model.Iteration) model.Summary {
 		trimmedRSS = rssValues[k : n-k]
 	}
 
+	trimmedCPU := cpuValues
+	if k > 0 && 2*k < n {
+		trimmedCPU = cpuValues[k : n-k]
+	}
+
 	outliersRemoved := n - len(trimmed)
 
 	return model.Summary{
-		TotalRuns:         n,
-		MeanTimeMs:        totalTime / float64(n),
-		TrimmedMeanTimeMs: average(trimmed),
-		AverageMaxRSSMB:   totalMaxRSS / float64(n),
-		TrimmedMaxRSSMB:   average(trimmedRSS),
-		OutliersRemoved:   outliersRemoved,
+		TotalRuns:            n,
+		MeanTimeMs:           totalTime / float64(n),
+		TrimmedMeanTimeMs:    average(trimmed),
+		AverageMaxRSSMB:      totalMaxRSS / float64(n),
+		TrimmedMaxRSSMB:      average(trimmedRSS),
+		AverageAvgCPUPercent: totalAvgCPU / float64(n),
+		TrimmedAvgCPUPercent: average(trimmedCPU),
+		OutliersRemoved:      outliersRemoved,
 	}
 }
 

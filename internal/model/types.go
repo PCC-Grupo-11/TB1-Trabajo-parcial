@@ -48,7 +48,8 @@ type ExecutionParams struct {
 }
 
 type MemoryMetrics struct {
-	MaxRSSMB float64 `json:"max_rss_mb"`
+	MaxRSSMB      float64 `json:"max_rss_mb"`
+	AvgCPUPercent float64 `json:"avg_cpu_percent"`
 }
 
 type Iteration struct {
@@ -58,12 +59,14 @@ type Iteration struct {
 }
 
 type Summary struct {
-	TotalRuns         int     `json:"total_runs"`
-	MeanTimeMs        float64 `json:"mean_time_ms"`
-	TrimmedMeanTimeMs float64 `json:"trimmed_mean_time_ms"`
-	AverageMaxRSSMB   float64 `json:"average_max_rss_mb"`
-	TrimmedMaxRSSMB   float64 `json:"trimmed_max_rss_mb"`
-	OutliersRemoved   int     `json:"outliers_removed"`
+	TotalRuns              int     `json:"total_runs"`
+	MeanTimeMs             float64 `json:"mean_time_ms"`
+	TrimmedMeanTimeMs      float64 `json:"trimmed_mean_time_ms"`
+	AverageMaxRSSMB        float64 `json:"average_max_rss_mb"`
+	TrimmedMaxRSSMB        float64 `json:"trimmed_max_rss_mb"`
+	AverageAvgCPUPercent   float64 `json:"average_avg_cpu_percent"`
+	TrimmedAvgCPUPercent   float64 `json:"trimmed_avg_cpu_percent"`
+	OutliersRemoved        int     `json:"outliers_removed"`
 }
 
 type Report struct {

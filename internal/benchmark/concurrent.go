@@ -73,7 +73,7 @@ func runConcurrentIteration(inputPath string, workers int, recordBufferMultiplie
 			return err
 		}
 
-		detection = stats.DetectAnomalies(state)
+		detection = stats.DetectAnomaliesConcurrent(state)
 		return nil
 	})
 	if err != nil {

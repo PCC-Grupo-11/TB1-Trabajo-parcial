@@ -91,6 +91,30 @@ func DetectAnomalies(state *model.GlobalState) model.DetectionResult {
 	}
 }
 
+func DetectAnomaliesConcurrent(state *model.GlobalState) model.DetectionResult {
+	usersCh := make(chan []string, 1)
+	targetsCh := make(chan []string, 1)
+	pairsCh := make(chan []string, 1)
+	typesCh := make(chan []string, 1)
+
+	go func() { usersCh <- detect(state.UserCounts, userThresholdZScore) }()
+	go func() { targetsCh <- detect(state.TargetCounts, targetThresholdZScore) }()
+	go func() { pairsCh <- detect(state.PairCounts, pairThresholdZScore) }()
+	go func() { typesCh <- detect(state.TypeCounts, typeThresholdZScore) }()
+
+	suspiciousUsers := <-usersCh
+	suspiciousTargets := <-targetsCh
+	suspiciousPairs := <-pairsCh
+	suspiciousTypes := <-typesCh
+
+	return model.DetectionResult{
+		SuspiciousUsers:   suspiciousUsers,
+		SuspiciousTargets: suspiciousTargets,
+		SuspiciousPairs:   suspiciousPairs,
+		SuspiciousTypes:   suspiciousTypes,
+	}
+}
+
 func detect(counts map[string]int, zScore float64) []string {
 	if len(counts) == 0 {
 		return []string{}

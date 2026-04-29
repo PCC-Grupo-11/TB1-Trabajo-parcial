@@ -4,3 +4,4 @@ bin/
 *.out
 .github/*
 data/cleaned_dataset.csv
+benchmark

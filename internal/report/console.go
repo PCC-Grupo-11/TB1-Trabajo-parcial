@@ -18,11 +18,7 @@ func PrintReport(report model.Report) {
 	fmt.Printf("Mode: %s\n", report.ExecutionParams.Mode)
 	fmt.Printf("Input: %s\n", report.ExecutionParams.Input)
 	fmt.Printf("Runs: %d\n", report.ExecutionParams.Runs)
-	if report.ExecutionParams.Mode == "sequential" {
-		fmt.Println("Workers: -")
-	} else {
-		fmt.Printf("Workers: %d\n", report.ExecutionParams.Workers)
-	}
+	fmt.Printf("Workers: %d\n", report.ExecutionParams.Workers)
 	fmt.Printf("Record buffer multiplier: %d\n", report.ExecutionParams.RecordBufferMultiplier)
 	fmt.Println()
 

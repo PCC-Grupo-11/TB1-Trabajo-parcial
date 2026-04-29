@@ -26,7 +26,7 @@ Flags:
   -i, --input        Required. Dataset path
   -n, --runs         Optional. Number of iterations (default %d)
   -w, --workers      Optional. Number of workers (default %d)
-	-b, --record-buffer-multiplier Optional. Records channel capacity multiplier per worker (default %d)
+  -b, --record-buffer-multiplier Optional. Records channel capacity multiplier per worker (default %d)
 `, defaultRuns, defaultWorkers, defaultRecordBufferMultiplier)
 
 type stringFlag struct {
@@ -119,7 +119,8 @@ func ParseArgs(args []string) (model.Config, error) {
 		if bufferMultiplierFlag.wasSet {
 			return model.Config{}, fmt.Errorf("record-buffer-multiplier is only valid in concurrent mode")
 		}
-		cfg.Workers = 0
+		cfg.Workers = -1
+		cfg.RecordBufferMultiplier = -1
 	case "concurrent":
 		if workersFlag.value < 1 {
 			return model.Config{}, fmt.Errorf("workers must be >= 1")

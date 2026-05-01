@@ -5,3 +5,4 @@ bin/
 .github/*
 data/cleaned_dataset.csv
 benchmark
+!internal/benchmark/

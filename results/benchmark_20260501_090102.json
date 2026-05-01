@@ -1,0 +1,266 @@
+{
+  "timestamp": "2026-05-01T09:01:02-05:00",
+  "device_info": {
+    "cpu_name": "12th Gen Intel(R) Core(TM) i5-12500H",
+    "logical_cores": 16,
+    "total_ram_gb": 23.71099090576172
+  },
+  "execution_params": {
+    "command": "./benchmark.exe --mode concurrent -n 20 --input data/cleaned_dataset.csv -w 4 -b 20",
+    "mode": "concurrent",
+    "input": "data/cleaned_dataset.csv",
+    "runs": 20,
+    "workers": 4,
+    "record_buffer_multiplier": 20
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "time_ms": 1595.5861,
+      "max_rss_mb": 461.546875,
+      "avg_cpu_percent": 256.8027040970109
+    },
+    {
+      "iteration": 2,
+      "time_ms": 1525.1526,
+      "max_rss_mb": 467.8125,
+      "avg_cpu_percent": 263.7432280311554
+    },
+    {
+      "iteration": 3,
+      "time_ms": 1485.277,
+      "max_rss_mb": 472.78515625,
+      "avg_cpu_percent": 273.9789626570757
+    },
+    {
+      "iteration": 4,
+      "time_ms": 1563.7151,
+      "max_rss_mb": 472.98046875,
+      "avg_cpu_percent": 275.1213322280023
+    },
+    {
+      "iteration": 5,
+      "time_ms": 1499.2127,
+      "max_rss_mb": 470.6015625,
+      "avg_cpu_percent": 275.62112458677103
+    },
+    {
+      "iteration": 6,
+      "time_ms": 1495.6299,
+      "max_rss_mb": 472.6875,
+      "avg_cpu_percent": 280.53298714881345
+    },
+    {
+      "iteration": 7,
+      "time_ms": 1506.7711,
+      "max_rss_mb": 472.6875,
+      "avg_cpu_percent": 284.73266327928314
+    },
+    {
+      "iteration": 8,
+      "time_ms": 1506.8309,
+      "max_rss_mb": 470.26171875,
+      "avg_cpu_percent": 284.893555644422
+    },
+    {
+      "iteration": 9,
+      "time_ms": 1515.5036,
+      "max_rss_mb": 481.65625,
+      "avg_cpu_percent": 283.1952566548065
+    },
+    {
+      "iteration": 10,
+      "time_ms": 1510.5806,
+      "max_rss_mb": 483.8984375,
+      "avg_cpu_percent": 285.5550975892898
+    },
+    {
+      "iteration": 11,
+      "time_ms": 1516.6411,
+      "max_rss_mb": 484.44140625,
+      "avg_cpu_percent": 286.01940884467496
+    },
+    {
+      "iteration": 12,
+      "time_ms": 1523.1645,
+      "max_rss_mb": 484.44921875,
+      "avg_cpu_percent": 288.0225203411008
+    },
+    {
+      "iteration": 13,
+      "time_ms": 1510.3106,
+      "max_rss_mb": 483.76953125,
+      "avg_cpu_percent": 290.97150773964165
+    },
+    {
+      "iteration": 14,
+      "time_ms": 1493.0406,
+      "max_rss_mb": 489.39453125,
+      "avg_cpu_percent": 291.9250963437962
+    },
+    {
+      "iteration": 15,
+      "time_ms": 1496.1997,
+      "max_rss_mb": 489.4765625,
+      "avg_cpu_percent": 289.5787598410984
+    },
+    {
+      "iteration": 16,
+      "time_ms": 1513.9244,
+      "max_rss_mb": 487.109375,
+      "avg_cpu_percent": 288.81023909947805
+    },
+    {
+      "iteration": 17,
+      "time_ms": 1533.3613,
+      "max_rss_mb": 492.10546875,
+      "avg_cpu_percent": 288.213844548981
+    },
+    {
+      "iteration": 18,
+      "time_ms": 1501.4374,
+      "max_rss_mb": 492.11328125,
+      "avg_cpu_percent": 288.2467073155858
+    },
+    {
+      "iteration": 19,
+      "time_ms": 1535.908,
+      "max_rss_mb": 486.16015625,
+      "avg_cpu_percent": 287.1158126666962
+    },
+    {
+      "iteration": 20,
+      "time_ms": 1500.8724,
+      "max_rss_mb": 486.16015625,
+      "avg_cpu_percent": 287.81633892258134
+    }
+  ],
+  "summary": {
+    "total_runs": 20,
+    "mean_time_ms": 1516.45598,
+    "trimmed_mean_time_ms": 1510.866825,
+    "average_max_rss_mb": 480.1048828125,
+    "trimmed_max_rss_mb": 480.7320963541667,
+    "average_avg_cpu_percent": 282.54485737901325,
+    "trimmed_avg_cpu_percent": 284.99710979525054,
+    "outliers_removed": 8
+  },
+  "detection_result": {
+    "suspicious_users": [
+      "ALVAREZ PENA DAVID",
+      "ALVAREZ TORRES ARMANDO",
+      "CARRASCO DIAZ ESTHER",
+      "FLORES ALVAREZ ROCIO",
+      "FLORES GONZALES FELIPE",
+      "GARCIA PENA ALEX",
+      "GONZALES PEREZ BRUNO",
+      "GUERRERO REYES JHON",
+      "HERRERA PEREZ LILIANA",
+      "RIVERA REYES OSCAR",
+      "SANTOS MIRANDA SOFIA",
+      "VARGAS RIVERA CARLA",
+      "VEGA VEGA ALEJANDRA"
+    ],
+    "suspicious_targets": [
+      "20100017491",
+      "20100035392",
+      "20100041953",
+      "20100043140",
+      "20100047218",
+      "20100053455",
+      "20100070970",
+      "20100103657",
+      "20100129290",
+      "20100130204",
+      "20100210909",
+      "20106897914",
+      "20109072177",
+      "20131300353",
+      "20205605500",
+      "20259702411",
+      "20330401991",
+      "20332970411",
+      "20341841357",
+      "20348858182",
+      "20467534026",
+      "20518042280",
+      "20544547756"
+    ],
+    "suspicious_pairs": [
+      "ALVAREZ FUENTES DIANA || 20341841357",
+      "ALVAREZ SALAZAR EDWIN || 20330401991",
+      "CARRASCO CRUZ DAVID || 20341841357",
+      "CASTILLO MAMANI SANDRA || 20467534026",
+      "CHAVEZ RODRIGUEZ MELISSA || 20341841357",
+      "CRUZ DIAZ SUSANA || 20467534026",
+      "CRUZ ORTIZ ADRIAN || 20467534026",
+      "CRUZ VARGAS PABLO || 20341841357",
+      "DIAZ MIRANDA DIEGO || 20100047218",
+      "FUENTES FUENTES PABLO || 20100017491",
+      "FUENTES HUAMAN OSCAR || 20100017491",
+      "GARCIA VALDEZ MILAGROS || 20100041953",
+      "HERRERA SOTO XIMENA || 20205605500",
+      "HERRERA VASQUEZ ROCIO || 20100017491",
+      "HUAMAN SOTO ELENA || 20100041953",
+      "MENDOZA MAMANI ALEJANDRA || 20100017491",
+      "MENDOZA VALDEZ CARMEN || 20100017491",
+      "MIRANDA MAMANI ANGEL || 20100041953",
+      "NAVARRO DIAZ YESENIA || 20100017491",
+      "NAVARRO VARGAS ANA || 20100017491",
+      "PALOMINO CASTRO LUIS || 20100035392",
+      "PALOMINO ESPINOZA PEDRO || 20467534026",
+      "PENA CAMPOS FELIPE || 20467534026",
+      "PENA MORALES JHON || 20467534026",
+      "PENA TORRES RENZO || 20467534026",
+      "REYES AGUILAR JESSICA || 20100017491",
+      "SANTOS ESPINOZA FERNANDO || 20341841357",
+      "SANTOS SALAZAR LEONARDO || 20100017491",
+      "SILVA PEREZ DANIELA || 20341841357",
+      "SOTO HURTADO LEONARDO || 20100017491",
+      "TORRES GUERRERO TERESA || 20100047218",
+      "VARGAS FLORES JESSICA || 20100017491",
+      "VASQUEZ AGUILAR SUSANA || 20467534026",
+      "VASQUEZ REYES LUCIA || 20330401991",
+      "VASQUEZ VASQUEZ HUGO || 20100017491",
+      "VEGA CRUZ NATALIA || 20341841357",
+      "VEGA LOPEZ JHON || 20330401991"
+    ],
+    "suspicious_types": [
+      "ALVAREZ PENA DAVID || DENUNCIA",
+      "ALVAREZ TORRES ARMANDO || DENUNCIA",
+      "CARRASCO DIAZ ESTHER || DENUNCIA",
+      "CARRASCO MAMANI DAYANA || DENUNCIA",
+      "CARRASCO ROMERO RENZO || DENUNCIA",
+      "CASTILLO GUERRERO XIMENA || DENUNCIA",
+      "CASTILLO PAREDES ELENA || DENUNCIA",
+      "CHAVEZ HURTADO VALERIA || DENUNCIA",
+      "CHAVEZ VARGAS GUSTAVO || DENUNCIA",
+      "DELGADO CRUZ IVAN || DENUNCIA",
+      "DELGADO HURTADO LILIANA || DENUNCIA",
+      "FLORES GONZALES FELIPE || DENUNCIA",
+      "FUENTES CRUZ FERNANDO || DENUNCIA",
+      "FUENTES HERRERA CRISTIAN || DENUNCIA",
+      "FUENTES HUAMAN OSCAR || DENUNCIA",
+      "FUENTES ROJAS PAOLA || DENUNCIA",
+      "FUENTES ROMERO BEATRIZ || DENUNCIA",
+      "GARCIA NAVARRO MARTIN || DENUNCIA",
+      "GUERRERO VARGAS JOSE || DENUNCIA",
+      "HURTADO CASTRO ANGELA || DENUNCIA",
+      "LOPEZ GUERRERO FERNANDO || DENUNCIA",
+      "MENDOZA CARRASCO CARLOS || DENUNCIA",
+      "MIRANDA RODRIGUEZ MARIBEL || DENUNCIA",
+      "NAVARRO CASTILLO HUGO || DENUNCIA",
+      "NAVARRO SOTO ISABEL || DENUNCIA",
+      "PAREDES GUERRERO CAMILA || DENUNCIA",
+      "PEREZ SANCHEZ MARTIN || DENUNCIA",
+      "RIVERA QUISPE ARMANDO || DENUNCIA",
+      "RIVERA REYES OSCAR || DENUNCIA",
+      "ROJAS RIVERA BRUNO || DENUNCIA",
+      "ROJAS RIVERA HUGO || DENUNCIA",
+      "ROMERO PEREZ CRISTIAN || DENUNCIA",
+      "VARGAS CASTRO DIANA || DENUNCIA",
+      "VARGAS RIVERA CARLA || DENUNCIA",
+      "VEGA VEGA ALEJANDRA || DENUNCIA"
+    ]
+  }
+}

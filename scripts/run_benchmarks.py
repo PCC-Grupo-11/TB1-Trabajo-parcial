@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
 """
-Run the benchmark binary across combinations of workers and buffer multipliers.
+Run the concurrent and sequential binaries across combinations of workers.
 
-Assuming the binary is already built at ./benchmark (or ./benchmark.exe on Windows),
-this script runs it for a fixed set of 25 runs: 24 concurrent combinations plus one
-sequential run. It prints progress in the console and copies the produced JSON report
-with a descriptive filename.
+Assuming the binaries are already built at ./bin/concurrent and ./bin/sequential
+(or .exe on Windows), this script runs it for a fixed set of concurrent
+combinations plus one sequential run.
+It prints progress in the console and copies the produced JSON report with a
+descriptive filename.
 """
 import os
 import re
-import shutil
 import subprocess
-from datetime import datetime
 from pathlib import Path
 
-DEFAULT_WORKERS = [1, 2, 4, 8, 16, 32]
-DEFAULT_BUFFERS = [5, 20, 50, 100]
+DEFAULT_WORKERS = [1, 2, 4, 8, 12, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256]
 DEFAULT_INPUT = "data/cleaned_dataset.csv"
 DEFAULT_N = 20
-DEFAULT_BINARY = "./benchmark"
+
+
+def executable_path(mode):
+    extension = ".exe" if os.name == "nt" else ""
+    return Path("bin") / f"{mode}{extension}"
 
 def extract_json_path(output_text):
     m = re.search(r"JSON file:\s*(.+)", output_text)
@@ -26,11 +28,16 @@ def extract_json_path(output_text):
         return m.group(1).strip()
     return None
 
-def run_and_capture(binary, mode, n, workers, buffer_multiplier):
-    cmd = [binary, "--mode", mode, "-n", str(n), "--input", DEFAULT_INPUT]
+def run_and_capture(mode, n, workers):
+    binary = executable_path(mode)
+    if not binary.exists():
+        print(f"error: executable not found: {binary}")
+        return 127
+
+    cmd = [str(binary), "-n", str(n), "--input", DEFAULT_INPUT]
 
     if mode == "concurrent":
-        cmd += ["-w", str(workers), "-b", str(buffer_multiplier)]
+        cmd += ["-w", str(workers)]
 
     print("\n==> Running:", " ".join(cmd))
     proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
@@ -50,20 +57,17 @@ def main():
     results_dir = Path("results")
     results_dir.mkdir(exist_ok=True)
 
-    binary = DEFAULT_BINARY + (".exe" if os.name == "nt" else "")
-
     combos = []
     for w in DEFAULT_WORKERS:
-        for b in DEFAULT_BUFFERS:
-            combos.append(("concurrent", w, b))
-    combos.append(("sequential", -1, -1))
+        combos.append(("concurrent", w))
+    combos.append(("sequential", -1))
 
     summary = []
     total_runs = len(combos)
-    for index, (mode, w, b) in enumerate(combos, start=1):
+    for index, (mode, w) in enumerate(combos, start=1):
         print(f"\n=== Run {index}/{total_runs}: {mode} ===")
-        rc = run_and_capture(binary, mode, DEFAULT_N, w, b)
-        summary.append({"mode": mode, "workers": w, "buffer": b, "rc": rc})
+        rc = run_and_capture(mode, DEFAULT_N, w)
+        summary.append({"mode": mode, "workers": w, "rc": rc})
 
     print("\nAll runs finished. Summary:")
     for s in summary:

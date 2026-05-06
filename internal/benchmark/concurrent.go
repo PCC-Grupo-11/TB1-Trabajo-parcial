@@ -53,7 +53,7 @@ func runConcurrentIteration(inputPath string, workers int, recordBufferMultiplie
 
 		var wg sync.WaitGroup
 		wg.Add(workers)
-		for i := 0; i < workers; i++ {
+		for range workers {
 			go func() {
 				defer wg.Done()
 				for record := range records {

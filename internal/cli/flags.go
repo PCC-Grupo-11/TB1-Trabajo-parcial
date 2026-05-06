@@ -12,22 +12,31 @@ import (
 )
 
 const (
-	defaultRuns                   = 1
-	defaultWorkers                = 4
-	defaultRecordBufferMultiplier = 20
+	defaultRuns    = 1
+	defaultWorkers = 4
 )
 
-var usageText = fmt.Sprintf(`Usage:
-	benchmark -m <sequential|concurrent> -i <dataset.csv> [-n runs] [-w workers] [-b buffer-multiplier]
-	benchmark --mode <sequential|concurrent> --input <dataset.csv> [--runs runs] [--workers workers] [--record-buffer-multiplier multiplier]
+func usageText(mode string) string {
+	if mode == "sequential" {
+		return fmt.Sprintf(`Usage:
+	sequential -i <dataset.csv> [-n runs]
+	sequential --input <dataset.csv> [--runs runs]
 
 Flags:
-  -m, --mode         Required. Execution mode: sequential|concurrent
+  -i, --input        Required. Dataset path
+  -n, --runs         Optional. Number of iterations (default %d)
+`, defaultRuns)
+	}
+	return fmt.Sprintf(`Usage:
+	concurrent -i <dataset.csv> [-n runs] [-w workers]
+	concurrent --input <dataset.csv> [--runs runs] [--workers workers]
+
+Flags:
   -i, --input        Required. Dataset path
   -n, --runs         Optional. Number of iterations (default %d)
   -w, --workers      Optional. Number of workers (default %d)
-  -b, --record-buffer-multiplier Optional. Records channel capacity multiplier per worker (default %d)
-`, defaultRuns, defaultWorkers, defaultRecordBufferMultiplier)
+`, defaultRuns, defaultWorkers)
+}
 
 type stringFlag struct {
 	value  string
@@ -63,41 +72,31 @@ func (i *intFlag) Set(value string) error {
 	return nil
 }
 
-func Parse() (model.Config, error) {
-	return ParseArgs(os.Args[1:])
+func Parse(mode string) (model.Config, error) {
+	return ParseArgs(os.Args[1:], mode)
 }
 
-func ParseArgs(args []string) (model.Config, error) {
-	fs := flag.NewFlagSet("benchmark", flag.ContinueOnError)
+func ParseArgs(args []string, mode string) (model.Config, error) {
+	fs := flag.NewFlagSet(mode, flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 
-	modeFlag := &stringFlag{}
 	inputFlag := &stringFlag{}
 	runsFlag := &intFlag{value: defaultRuns}
 	workersFlag := &intFlag{value: defaultWorkers}
-	bufferMultiplierFlag := &intFlag{value: defaultRecordBufferMultiplier}
 
-	registerFlag(fs, modeFlag, "m", "mode", "execution mode")
 	registerFlag(fs, inputFlag, "i", "input", "dataset path")
 	registerFlag(fs, runsFlag, "n", "runs", "number of runs")
-	registerFlag(fs, workersFlag, "w", "workers", "number of workers")
-	registerFlag(fs, bufferMultiplierFlag, "b", "record-buffer-multiplier", "records channel capacity multiplier per worker")
+
+	if mode == "concurrent" {
+		registerFlag(fs, workersFlag, "w", "workers", "number of workers")
+	}
 
 	if err := fs.Parse(args); err != nil {
-		return model.Config{}, fmt.Errorf("%w\n\n%s", err, usageText)
-	}
-
-	if !modeFlag.wasSet || strings.TrimSpace(modeFlag.value) == "" {
-		return model.Config{}, fmt.Errorf("mode is required\n\n%s", usageText)
-	}
-
-	mode := strings.ToLower(strings.TrimSpace(modeFlag.value))
-	if mode != "sequential" && mode != "concurrent" {
-		return model.Config{}, fmt.Errorf("invalid mode %q; expected sequential|concurrent\n\n%s", modeFlag.value, usageText)
+		return model.Config{}, fmt.Errorf("%w\n\n%s", err, usageText(mode))
 	}
 
 	if !inputFlag.wasSet || strings.TrimSpace(inputFlag.value) == "" {
-		return model.Config{}, fmt.Errorf("input is required\n\n%s", usageText)
+		return model.Config{}, fmt.Errorf("input is required\n\n%s", usageText(mode))
 	}
 
 	if runsFlag.value < 1 {
@@ -105,31 +104,21 @@ func ParseArgs(args []string) (model.Config, error) {
 	}
 
 	cfg := model.Config{
-		Mode:                   mode,
-		Input:                  strings.TrimSpace(inputFlag.value),
-		Runs:                   runsFlag.value,
-		RecordBufferMultiplier: defaultRecordBufferMultiplier,
+		Mode:  mode,
+		Input: strings.TrimSpace(inputFlag.value),
+		Runs:  runsFlag.value,
 	}
 
 	switch mode {
 	case "sequential":
-		if workersFlag.wasSet {
-			return model.Config{}, fmt.Errorf("workers is only valid in concurrent mode")
-		}
-		if bufferMultiplierFlag.wasSet {
-			return model.Config{}, fmt.Errorf("record-buffer-multiplier is only valid in concurrent mode")
-		}
 		cfg.Workers = -1
-		cfg.RecordBufferMultiplier = -1
 	case "concurrent":
 		if workersFlag.value < 1 {
 			return model.Config{}, fmt.Errorf("workers must be >= 1")
 		}
-		if bufferMultiplierFlag.value < 1 {
-			return model.Config{}, fmt.Errorf("record-buffer-multiplier must be >= 1")
-		}
 		cfg.Workers = workersFlag.value
-		cfg.RecordBufferMultiplier = bufferMultiplierFlag.value
+	default:
+		return model.Config{}, fmt.Errorf("invalid mode %q", mode)
 	}
 
 	return cfg, nil

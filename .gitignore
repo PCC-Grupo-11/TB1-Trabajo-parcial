@@ -4,5 +4,6 @@ bin/
 *.out
 .github/*
 data/cleaned_dataset.csv
-benchmark
 !internal/benchmark/
+benchmark
+benchmark.exe

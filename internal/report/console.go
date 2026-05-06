@@ -19,7 +19,6 @@ func PrintReport(report model.Report) {
 	fmt.Printf("Input: %s\n", report.ExecutionParams.Input)
 	fmt.Printf("Runs: %d\n", report.ExecutionParams.Runs)
 	fmt.Printf("Workers: %d\n", report.ExecutionParams.Workers)
-	fmt.Printf("Record buffer multiplier: %d\n", report.ExecutionParams.RecordBufferMultiplier)
 	fmt.Println()
 
 	fmt.Println("=== ITERATIONS ===")

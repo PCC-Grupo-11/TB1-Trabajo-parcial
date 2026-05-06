@@ -7,7 +7,6 @@ type Config struct {
 	Input                  string `json:"input"`
 	Runs                   int    `json:"runs"`
 	Workers                int    `json:"workers"`
-	RecordBufferMultiplier int    `json:"record_buffer_multiplier"`
 }
 
 type Record struct {
@@ -44,7 +43,6 @@ type ExecutionParams struct {
 	Input                  string `json:"input"`
 	Runs                   int    `json:"runs"`
 	Workers                int    `json:"workers"`
-	RecordBufferMultiplier int    `json:"record_buffer_multiplier"`
 }
 
 type Metrics struct {

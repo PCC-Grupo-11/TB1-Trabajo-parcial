@@ -9,6 +9,8 @@ import (
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/stats"
 )
 
+const recordBufferMultiplier = 80
+
 func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, error) {
 	if cfg.Runs < 1 {
 		return nil, emptyDetectionResult(), fmt.Errorf("runs must be >= 1")
@@ -24,7 +26,7 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	iterations, err := runIterations(cfg.Runs, func() (float64, model.Metrics, error) {
 		runtime.GC()
 
-		detection, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Workers, cfg.RecordBufferMultiplier)
+		detection, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Workers)
 		if err != nil {
 			return 0, model.Metrics{}, err
 		}
@@ -39,7 +41,7 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	return iterations, finalDetection, nil
 }
 
-func runConcurrentIteration(inputPath string, workers int, recordBufferMultiplier int) (model.DetectionResult, float64, model.Metrics, error) {
+func runConcurrentIteration(inputPath string, workers int) (model.DetectionResult, float64, model.Metrics, error) {
 	state := newGlobalState()
 	detection := emptyDetectionResult()
 

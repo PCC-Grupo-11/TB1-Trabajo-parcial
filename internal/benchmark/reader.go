@@ -38,8 +38,10 @@ func forEachRecord(path string, handle func(model.Record) error) error {
 	userIdx := indexOf(header, "USER_KEY")
 	targetIdx := indexOf(header, "TARGET_KEY")
 	typeIdx := indexOf(header, "TYPE_KEY")
-	if userIdx == -1 || targetIdx == -1 || typeIdx == -1 {
-		return fmt.Errorf("required columns not found: USER_KEY, TARGET_KEY, TYPE_KEY")
+	textoIdx := indexOf(header, "TEXTO_RECLAMO")
+
+	if userIdx == -1 || targetIdx == -1 || typeIdx == -1 || textoIdx == -1 {
+		return fmt.Errorf("required columns not found: USER_KEY, TARGET_KEY, TYPE_KEY, TEXTO_RECLAMO")
 	}
 
 	for {
@@ -50,15 +52,20 @@ func forEachRecord(path string, handle func(model.Record) error) error {
 		if err != nil {
 			return fmt.Errorf("read csv row: %w", err)
 		}
-		if len(row) <= userIdx || len(row) <= targetIdx || len(row) <= typeIdx {
+
+		rowLen := len(row)
+		if rowLen <= userIdx || rowLen <= targetIdx || rowLen <= typeIdx || rowLen <= textoIdx {
 			continue
 		}
 
-		if err := handle(model.Record{
-			UserKey:   strings.TrimSpace(row[userIdx]),
-			TargetKey: strings.TrimSpace(row[targetIdx]),
-			TypeKey:   strings.TrimSpace(row[typeIdx]),
-		}); err != nil {
+		record := model.Record{
+			UserKey:      strings.TrimSpace(row[userIdx]),
+			TargetKey:    strings.TrimSpace(row[targetIdx]),
+			TypeKey:      strings.TrimSpace(row[typeIdx]),
+			TextoReclamo: strings.TrimSpace(row[textoIdx]),
+		}
+
+		if err := handle(record); err != nil {
 			return err
 		}
 	}

@@ -17,6 +17,7 @@ func PrintReport(report model.Report) {
 	fmt.Printf("Command: %s\n", report.ExecutionParams.Command)
 	fmt.Printf("Mode: %s\n", report.ExecutionParams.Mode)
 	fmt.Printf("Input: %s\n", report.ExecutionParams.Input)
+	fmt.Printf("Bigrams path: %s\n", report.ExecutionParams.BigramsPath)
 	fmt.Printf("Runs: %d\n", report.ExecutionParams.Runs)
 	fmt.Printf("Workers: %d\n", report.ExecutionParams.Workers)
 	fmt.Println()
@@ -48,6 +49,10 @@ func PrintReport(report model.Report) {
 	printSuspiciousList("Suspicious targets", report.DetectionResult.SuspiciousTargets)
 	printSuspiciousList("Suspicious pairs", report.DetectionResult.SuspiciousPairs)
 	printSuspiciousList("Suspicious types", report.DetectionResult.SuspiciousTypes)
+	fmt.Println()
+	fmt.Println("=== SPAM ===")
+	fmt.Printf("Total spam reports: %d\n", report.DetectionResult.SpamRecords)
+	printTopSpammers(report.DetectionResult.TopSpammers)
 }
 
 func printSuspiciousList(label string, values []string) {
@@ -57,4 +62,16 @@ func printSuspiciousList(label string, values []string) {
 	}
 
 	fmt.Printf("%s: %v\n", label, values)
+}
+
+func printTopSpammers(topSpammers []model.SpamEntry) {
+	if len(topSpammers) == 0 {
+		fmt.Println("Top 10 spammers: none")
+		return
+	}
+
+	fmt.Println("Top 10 spammers:")
+	for i, entry := range topSpammers {
+		fmt.Printf("%d. %s -> %d spam reports\n", i+1, entry.Name, entry.Count)
+	}
 }

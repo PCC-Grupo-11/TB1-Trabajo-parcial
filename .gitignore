@@ -7,3 +7,4 @@ data/cleaned_dataset.csv
 !internal/benchmark/
 benchmark
 benchmark.exe
+data/Dataset Arreglado.csv

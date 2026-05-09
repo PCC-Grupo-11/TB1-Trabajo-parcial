@@ -31,16 +31,17 @@ func main() {
 
 	summary := stats.ComputeSummary(iterations)
 
-		reportObj := model.Report{
-			Timestamp:  time.Now().Format(time.RFC3339),
-			DeviceInfo: device,
-			ExecutionParams: model.ExecutionParams{
-				Command: cli.BuildCommand(os.Args),
-				Input:   cfg.Input,
-				Mode:    cfg.Mode,
-				Runs:    cfg.Runs,
-				Workers: cfg.Workers,
-			},
+	reportObj := model.Report{
+		Timestamp:  time.Now().Format(time.RFC3339),
+		DeviceInfo: device,
+		ExecutionParams: model.ExecutionParams{
+			Command:     cli.BuildCommand(os.Args),
+			Input:       cfg.Input,
+			Mode:        cfg.Mode,
+			Runs:        cfg.Runs,
+			Workers:     cfg.Workers,
+			BigramsPath: cfg.BigramsPath,
+		},
 		Iterations:      iterations,
 		Summary:         summary,
 		DetectionResult: detection,

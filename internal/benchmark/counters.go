@@ -8,6 +8,7 @@ func newGlobalState() *model.GlobalState {
 		TargetCounts: make(map[string]int),
 		PairCounts:   make(map[string]int),
 		TypeCounts:   make(map[string]int),
+		SpamByUser:   make(map[string]int),
 	}
 }
 
@@ -21,5 +22,6 @@ func emptyDetectionResult() model.DetectionResult {
 		SuspiciousTargets: []string{},
 		SuspiciousPairs:   []string{},
 		SuspiciousTypes:   []string{},
+		TopSpammers:       []model.SpamEntry{},
 	}
 }

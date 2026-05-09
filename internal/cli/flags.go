@@ -14,28 +14,31 @@ import (
 const (
 	defaultRuns    = 1
 	defaultWorkers = 4
+	defaultBigrams = "data/top_200_bigrams.json"
 )
 
 func usageText(mode string) string {
 	if mode == "sequential" {
 		return fmt.Sprintf(`Usage:
 	sequential -i <dataset.csv> [-n runs]
-	sequential --input <dataset.csv> [--runs runs]
+	sequential --input <dataset.csv> [--runs runs] [--bigrams file]
 
 Flags:
   -i, --input        Required. Dataset path
   -n, --runs         Optional. Number of iterations (default %d)
-`, defaultRuns)
+  -b, --bigrams      Optional. Bigram JSON path (default %s)
+`, defaultRuns, defaultBigrams)
 	}
 	return fmt.Sprintf(`Usage:
 	concurrent -i <dataset.csv> [-n runs] [-w workers]
-	concurrent --input <dataset.csv> [--runs runs] [--workers workers]
+	concurrent --input <dataset.csv> [--runs runs] [--workers workers] [--bigrams file]
 
 Flags:
   -i, --input        Required. Dataset path
   -n, --runs         Optional. Number of iterations (default %d)
   -w, --workers      Optional. Number of workers (default %d)
-`, defaultRuns, defaultWorkers)
+  -b, --bigrams      Optional. Bigram JSON path (default %s)
+`, defaultRuns, defaultWorkers, defaultBigrams)
 }
 
 type stringFlag struct {
@@ -83,9 +86,11 @@ func ParseArgs(args []string, mode string) (model.Config, error) {
 	inputFlag := &stringFlag{}
 	runsFlag := &intFlag{value: defaultRuns}
 	workersFlag := &intFlag{value: defaultWorkers}
+	bigramsFlag := &stringFlag{value: defaultBigrams}
 
 	registerFlag(fs, inputFlag, "i", "input", "dataset path")
 	registerFlag(fs, runsFlag, "n", "runs", "number of runs")
+	registerFlag(fs, bigramsFlag, "b", "bigrams", "bigram JSON path")
 
 	if mode == "concurrent" {
 		registerFlag(fs, workersFlag, "w", "workers", "number of workers")
@@ -104,9 +109,10 @@ func ParseArgs(args []string, mode string) (model.Config, error) {
 	}
 
 	cfg := model.Config{
-		Mode:  mode,
-		Input: strings.TrimSpace(inputFlag.value),
-		Runs:  runsFlag.value,
+		Mode:        mode,
+		Input:       strings.TrimSpace(inputFlag.value),
+		Runs:        runsFlag.value,
+		BigramsPath: strings.TrimSpace(bigramsFlag.value),
 	}
 
 	switch mode {

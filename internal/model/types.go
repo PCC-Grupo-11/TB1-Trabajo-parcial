@@ -3,16 +3,23 @@ package model
 import "sync"
 
 type Config struct {
-	Mode                   string `json:"mode"`
-	Input                  string `json:"input"`
-	Runs                   int    `json:"runs"`
-	Workers                int    `json:"workers"`
+	Mode        string `json:"mode"`
+	Input       string `json:"input"`
+	Runs        int    `json:"runs"`
+	Workers     int    `json:"workers"`
+	BigramsPath string `json:"bigramsPath"`
 }
 
 type Record struct {
-	UserKey   string
-	TargetKey string
-	TypeKey   string
+	UserKey      string
+	TargetKey    string
+	TypeKey      string
+	TextoReclamo string
+}
+
+type SpamEntry struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
 }
 
 type GlobalState struct {
@@ -22,13 +29,17 @@ type GlobalState struct {
 	TargetCounts map[string]int
 	PairCounts   map[string]int
 	TypeCounts   map[string]int
+	SpamCount    int
+	SpamByUser   map[string]int
 }
 
 type DetectionResult struct {
-	SuspiciousUsers   []string `json:"suspicious_users"`
-	SuspiciousTargets []string `json:"suspicious_targets"`
-	SuspiciousPairs   []string `json:"suspicious_pairs"`
-	SuspiciousTypes   []string `json:"suspicious_types"`
+	SuspiciousUsers   []string    `json:"suspicious_users"`
+	SuspiciousTargets []string    `json:"suspicious_targets"`
+	SuspiciousPairs   []string    `json:"suspicious_pairs"`
+	SuspiciousTypes   []string    `json:"suspicious_types"`
+	SpamRecords       int         `json:"spam_records"`
+	TopSpammers       []SpamEntry `json:"top_spammers"`
 }
 
 type DeviceInfo struct {
@@ -38,11 +49,12 @@ type DeviceInfo struct {
 }
 
 type ExecutionParams struct {
-	Command                string `json:"command"`
-	Mode                   string `json:"mode"`
-	Input                  string `json:"input"`
-	Runs                   int    `json:"runs"`
-	Workers                int    `json:"workers"`
+	Command     string `json:"command"`
+	Mode        string `json:"mode"`
+	Input       string `json:"input"`
+	Runs        int    `json:"runs"`
+	Workers     int    `json:"workers"`
+	BigramsPath string `json:"bigramsPath"`
 }
 
 type Metrics struct {

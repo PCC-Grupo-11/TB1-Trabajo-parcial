@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	userThresholdZScore   = 12.0
-	targetThresholdZScore = 2.0
-	pairThresholdZScore   = 22.0
-	typeThresholdZScore   = 15.0
+	userThresholdZScore   = 5.0
+	targetThresholdZScore = 1.0
+	pairThresholdZScore   = 12.0
+	typeThresholdZScore   = 8.0
 )
 
 func ComputeSummary(iterations []model.Iteration) model.Summary {
@@ -95,12 +95,18 @@ func DetectAnomalies(state *model.GlobalState) model.DetectionResult {
 	suspiciousPairs := detect(state.PairCounts, pairThresholdZScore)
 	suspiciousTypes := detect(state.TypeCounts, typeThresholdZScore)
 
-	return model.DetectionResult{
+	result := model.DetectionResult{
 		SuspiciousUsers:   suspiciousUsers,
 		SuspiciousTargets: suspiciousTargets,
 		SuspiciousPairs:   suspiciousPairs,
 		SuspiciousTypes:   suspiciousTypes,
 	}
+
+	spamResults := PopulateSpamResults(state)
+	result.SpamRecords = spamResults.SpamRecords
+	result.TopSpammers = spamResults.TopSpammers
+
+	return result
 }
 
 func DetectAnomaliesConcurrent(state *model.GlobalState) model.DetectionResult {
@@ -108,23 +114,30 @@ func DetectAnomaliesConcurrent(state *model.GlobalState) model.DetectionResult {
 	targetsCh := make(chan []string, 1)
 	pairsCh := make(chan []string, 1)
 	typesCh := make(chan []string, 1)
+	spamCh := make(chan spamDetectionResult, 1)
 
 	go func() { usersCh <- detect(state.UserCounts, userThresholdZScore) }()
 	go func() { targetsCh <- detect(state.TargetCounts, targetThresholdZScore) }()
 	go func() { pairsCh <- detect(state.PairCounts, pairThresholdZScore) }()
 	go func() { typesCh <- detect(state.TypeCounts, typeThresholdZScore) }()
+	go func() { spamCh <- PopulateSpamResults(state) }()
 
 	suspiciousUsers := <-usersCh
 	suspiciousTargets := <-targetsCh
 	suspiciousPairs := <-pairsCh
 	suspiciousTypes := <-typesCh
+	spamResult := <-spamCh
 
-	return model.DetectionResult{
+	result := model.DetectionResult{
 		SuspiciousUsers:   suspiciousUsers,
 		SuspiciousTargets: suspiciousTargets,
 		SuspiciousPairs:   suspiciousPairs,
 		SuspiciousTypes:   suspiciousTypes,
+		SpamRecords:       spamResult.SpamRecords,
+		TopSpammers:       spamResult.TopSpammers,
 	}
+
+	return result
 }
 
 func detect(counts map[string]int, zScore float64) []string {
@@ -156,4 +169,40 @@ func detect(counts map[string]int, zScore float64) []string {
 
 	sort.Strings(suspicious)
 	return suspicious
+}
+
+type spamDetectionResult struct {
+	SpamRecords int
+	TopSpammers []model.SpamEntry
+}
+
+func PopulateSpamResults(state *model.GlobalState) spamDetectionResult {
+	return spamDetectionResult{
+		SpamRecords: state.SpamCount,
+		TopSpammers: topNCounts(state.SpamByUser, 10),
+	}
+}
+
+func topNCounts(counts map[string]int, limit int) []model.SpamEntry {
+	if len(counts) == 0 || limit <= 0 {
+		return []model.SpamEntry{}
+	}
+
+	entries := make([]model.SpamEntry, 0, len(counts))
+	for name, count := range counts {
+		entries = append(entries, model.SpamEntry{Name: name, Count: count})
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		if entries[i].Count == entries[j].Count {
+			return entries[i].Name < entries[j].Name
+		}
+		return entries[i].Count > entries[j].Count
+	})
+
+	if len(entries) > limit {
+		entries = entries[:limit]
+	}
+
+	return entries
 }

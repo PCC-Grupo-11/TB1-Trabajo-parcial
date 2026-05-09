@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/model"
+	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/preprocess"
 	"github.com/PCC-Grupo-11/TB1-Trabajo-parcial/internal/stats"
 )
 
@@ -22,11 +23,16 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 		return nil, emptyDetectionResult(), fmt.Errorf("workers must be >= 1 for concurrent mode")
 	}
 
+	bigramsSet, err := preprocess.LoadBigrams(cfg.BigramsPath)
+	if err != nil {
+		return nil, emptyDetectionResult(), fmt.Errorf("load bigrams: %w", err)
+	}
+
 	var finalDetection model.DetectionResult
 	iterations, err := runIterations(cfg.Runs, func() (float64, model.Metrics, error) {
 		runtime.GC()
 
-		detection, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Workers)
+		detection, timeMs, memory, err := runConcurrentIteration(cfg.Input, cfg.Workers, bigramsSet)
 		if err != nil {
 			return 0, model.Metrics{}, err
 		}
@@ -41,7 +47,7 @@ func RunConcurrent(cfg model.Config) ([]model.Iteration, model.DetectionResult, 
 	return iterations, finalDetection, nil
 }
 
-func runConcurrentIteration(inputPath string, workers int) (model.DetectionResult, float64, model.Metrics, error) {
+func runConcurrentIteration(inputPath string, workers int, bigramsSet map[string]bool) (model.DetectionResult, float64, model.Metrics, error) {
 	state := newGlobalState()
 	detection := emptyDetectionResult()
 
@@ -59,11 +65,19 @@ func runConcurrentIteration(inputPath string, workers int) (model.DetectionResul
 			go func() {
 				defer wg.Done()
 				for record := range records {
+					isSpam := preprocess.IsSpam(record.TextoReclamo, bigramsSet)
+
 					state.Mu.Lock()
 					state.UserCounts[record.UserKey]++
 					state.TargetCounts[record.TargetKey]++
 					state.PairCounts[pairKey(record.UserKey, record.TargetKey)]++
 					state.TypeCounts[pairKey(record.UserKey, record.TypeKey)]++
+
+					if isSpam {
+						state.SpamCount++
+						state.SpamByUser[record.UserKey]++
+					}
+
 					state.Mu.Unlock()
 				}
 			}()

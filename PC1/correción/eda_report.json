@@ -1,0 +1,120 @@
+{
+  "timestamp": "2026-05-06T20:55:32-05:00",
+  "input_file": "..\\..\\data\\Dataset_Arreglado.csv",
+  "total_rows": 1000000,
+  "unique_users": 241610,
+  "unique_targets": 39,
+  "unique_types": 5,
+  "avg_text_length_chars": 278.586654,
+  "avg_words": 46.628108,
+  "bot_count": 296090,
+  "human_count": 703910,
+  "bot_percent": 29.609,
+  "avg_keywords_bot": 8.856648316390286,
+  "type_distribution": [
+    {
+      "key": "RECLAMO",
+      "count": 450157
+    },
+    {
+      "key": "QUEJA",
+      "count": 300327
+    },
+    {
+      "key": "DENUNCIA",
+      "count": 149950
+    },
+    {
+      "key": "CONSULTA",
+      "count": 49932
+    },
+    {
+      "key": "SUGERENCIA",
+      "count": 49634
+    }
+  ],
+  "top_targets_by_complaints": [
+    {
+      "key": "20100047218",
+      "count": 95482
+    },
+    {
+      "key": "20100053455",
+      "count": 84880
+    },
+    {
+      "key": "20100130204",
+      "count": 84658
+    },
+    {
+      "key": "20100043140",
+      "count": 73612
+    },
+    {
+      "key": "20116544289",
+      "count": 63326
+    },
+    {
+      "key": "20100017491",
+      "count": 63304
+    },
+    {
+      "key": "20517352573",
+      "count": 42599
+    },
+    {
+      "key": "20330439703",
+      "count": 42397
+    },
+    {
+      "key": "20382036655",
+      "count": 42270
+    },
+    {
+      "key": "20339340540",
+      "count": 42021
+    }
+  ],
+  "top_users_by_complaints": [
+    {
+      "key": "PAREDES SOTO JESSICA",
+      "count": 17
+    },
+    {
+      "key": "SILVA CARRILLO MIGUEL",
+      "count": 16
+    },
+    {
+      "key": "DIAZ VASQUEZ OSCAR",
+      "count": 15
+    },
+    {
+      "key": "GUTIERREZ PENA VALERIA",
+      "count": 15
+    },
+    {
+      "key": "NUNEZ SANCHEZ VICTOR",
+      "count": 14
+    },
+    {
+      "key": "ROJAS GUTIERREZ TERESA",
+      "count": 14
+    },
+    {
+      "key": "ALVAREZ RAMOS ROSA",
+      "count": 14
+    },
+    {
+      "key": "CONDORI MIRANDA MARIA",
+      "count": 14
+    },
+    {
+      "key": "CARRILLO LOZANO PABLO",
+      "count": 14
+    },
+    {
+      "key": "APAZA VASQUEZ MILAGROS",
+      "count": 14
+    }
+  ]
+}

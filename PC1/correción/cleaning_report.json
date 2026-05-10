@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-05-06T20:56:00-05:00",
+  "input_file": "..\\..\\data\\Dataset_Arreglado.csv",
+  "output_file": "../../data/cleaned_dataset.csv",
+  "original_rows": 1000000,
+  "cleaned_rows": 1000000,
+  "dropped_rows": 0,
+  "dropped_reasons": {
+    "empty_target": 0,
+    "empty_texto": 0,
+    "empty_type": 0,
+    "empty_user": 0,
+    "texto_short": 0
+  }
+}

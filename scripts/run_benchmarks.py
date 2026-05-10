@@ -11,10 +11,12 @@ descriptive filename.
 import os
 import re
 import subprocess
+import time
 from pathlib import Path
 
-DEFAULT_WORKERS = [1, 2, 4, 8, 12, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256]
-DEFAULT_INPUT = "data/cleaned_dataset.csv"
+# DEFAULT_WORKERS = [1, 2, 4, 8, 12, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256]
+DEFAULT_WORKERS = [1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48]
+DEFAULT_INPUT = "./data/Dataset Arreglado.csv"
 DEFAULT_N = 20
 
 
@@ -68,6 +70,9 @@ def main():
         print(f"\n=== Run {index}/{total_runs}: {mode} ===")
         rc = run_and_capture(mode, DEFAULT_N, w)
         summary.append({"mode": mode, "workers": w, "rc": rc})
+
+        if index < total_runs:
+            time.sleep(20)
 
     print("\nAll runs finished. Summary:")
     for s in summary:

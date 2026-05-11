@@ -1,0 +1,231 @@
+{
+  "timestamp": "2026-05-10T16:43:46-05:00",
+  "device_info": {
+    "cpu_name": "Apple M3",
+    "logical_cores": 8,
+    "total_ram_gb": 16
+  },
+  "execution_params": {
+    "command": "bin/concurrent -n 20 --input './data/Dataset Arreglado.csv' -w 48",
+    "mode": "concurrent",
+    "input": "./data/Dataset Arreglado.csv",
+    "runs": 20,
+    "workers": 48,
+    "bigramsPath": "data/top_200_bigrams.json"
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "time_ms": 2549.053917,
+      "max_rss_mb": 507.078125,
+      "avg_cpu_percent": 375.37222239577505
+    },
+    {
+      "iteration": 2,
+      "time_ms": 2401.881958,
+      "max_rss_mb": 630.296875,
+      "avg_cpu_percent": 371.6971682422904
+    },
+    {
+      "iteration": 3,
+      "time_ms": 2400.267459,
+      "max_rss_mb": 635.859375,
+      "avg_cpu_percent": 371.42381210086097
+    },
+    {
+      "iteration": 4,
+      "time_ms": 2425.440292,
+      "max_rss_mb": 640.03125,
+      "avg_cpu_percent": 371.1785778196791
+    },
+    {
+      "iteration": 5,
+      "time_ms": 2510.257667,
+      "max_rss_mb": 640.078125,
+      "avg_cpu_percent": 369.89862258680915
+    },
+    {
+      "iteration": 6,
+      "time_ms": 2510.162667,
+      "max_rss_mb": 640.078125,
+      "avg_cpu_percent": 369.2082846235004
+    },
+    {
+      "iteration": 7,
+      "time_ms": 2455.238459,
+      "max_rss_mb": 640.078125,
+      "avg_cpu_percent": 369.80510769772195
+    },
+    {
+      "iteration": 8,
+      "time_ms": 2384.968333,
+      "max_rss_mb": 640.109375,
+      "avg_cpu_percent": 370.9129788739263
+    },
+    {
+      "iteration": 9,
+      "time_ms": 2429.941917,
+      "max_rss_mb": 640.15625,
+      "avg_cpu_percent": 371.8084140391881
+    },
+    {
+      "iteration": 10,
+      "time_ms": 2519.048334,
+      "max_rss_mb": 640.15625,
+      "avg_cpu_percent": 372.2553464637257
+    },
+    {
+      "iteration": 11,
+      "time_ms": 2338.729,
+      "max_rss_mb": 640.546875,
+      "avg_cpu_percent": 372.9196153832669
+    },
+    {
+      "iteration": 12,
+      "time_ms": 2356.40925,
+      "max_rss_mb": 640.5625,
+      "avg_cpu_percent": 373.77599883465086
+    },
+    {
+      "iteration": 13,
+      "time_ms": 2368.35825,
+      "max_rss_mb": 640.609375,
+      "avg_cpu_percent": 374.01446536714906
+    },
+    {
+      "iteration": 14,
+      "time_ms": 2330.773583,
+      "max_rss_mb": 640.625,
+      "avg_cpu_percent": 374.61861736076827
+    },
+    {
+      "iteration": 15,
+      "time_ms": 2325.888041,
+      "max_rss_mb": 640.625,
+      "avg_cpu_percent": 375.3587248017607
+    },
+    {
+      "iteration": 16,
+      "time_ms": 2354.419833,
+      "max_rss_mb": 640.65625,
+      "avg_cpu_percent": 375.78233338533676
+    },
+    {
+      "iteration": 17,
+      "time_ms": 2342.861584,
+      "max_rss_mb": 640.65625,
+      "avg_cpu_percent": 376.1666265864255
+    },
+    {
+      "iteration": 18,
+      "time_ms": 2331.988542,
+      "max_rss_mb": 640.65625,
+      "avg_cpu_percent": 376.6338950592454
+    },
+    {
+      "iteration": 19,
+      "time_ms": 2342.626416,
+      "max_rss_mb": 640.65625,
+      "avg_cpu_percent": 377.11715056503743
+    },
+    {
+      "iteration": 20,
+      "time_ms": 2323.587792,
+      "max_rss_mb": 640.71875,
+      "avg_cpu_percent": 377.63926730107056
+    }
+  ],
+  "summary": {
+    "total_runs": 20,
+    "mean_time_ms": 2400.0951646999997,
+    "trimmed_mean_time_ms": 2383.4285625833336,
+    "average_max_rss_mb": 633.01171875,
+    "trimmed_max_rss_mb": 640.3567708333334,
+    "average_avg_cpu_percent": 373.3793614744094,
+    "trimmed_avg_cpu_percent": 373.3504413495377,
+    "outliers_removed": 8
+  },
+  "detection_result": {
+    "suspicious_users": [
+      "ALVAREZ RAMOS ROSA",
+      "APAZA VASQUEZ MILAGROS",
+      "BRAVO NUNEZ LUISA",
+      "CARRILLO LOZANO PABLO",
+      "CHAVEZ SANTOS LUISA",
+      "CONDORI MIRANDA MARIA",
+      "CORDOVA CARDENAS PATRICIA",
+      "DIAZ VASQUEZ OSCAR",
+      "FUENTES PALOMINO RICARDO",
+      "GUTIERREZ PENA VALERIA",
+      "NUNEZ SANCHEZ VICTOR",
+      "PALACIOS TORRES ALONSO",
+      "PAREDES SOTO JESSICA",
+      "RAMIREZ DELGADO ANDRES",
+      "ROJAS GUTIERREZ TERESA",
+      "SILVA CARRILLO MIGUEL"
+    ],
+    "suspicious_targets": [
+      "20100017491",
+      "20100043140",
+      "20100047218",
+      "20100053455",
+      "20100130204",
+      "20116544289"
+    ],
+    "suspicious_pairs": [
+      "GONZALES AGUILAR VALERIA || 20100047218"
+    ],
+    "suspicious_types": [
+      "ALVAREZ TAPIA OSCAR || RECLAMO",
+      "CASTRO CAMPOS MILAGROS || RECLAMO",
+      "CONDORI MIRANDA MARIA || RECLAMO",
+      "CRUZ VEGA ALEX || RECLAMO",
+      "LOZANO HURTADO KARINA || RECLAMO",
+      "RODRIGUEZ ESPINOZA ANTONIO || RECLAMO",
+      "TORRES MORALES MAXIMO || RECLAMO"
+    ],
+    "spam_records": 323609,
+    "top_spammers": [
+      {
+        "name": "APAZA VASQUEZ MILAGROS",
+        "count": 9
+      },
+      {
+        "name": "CHAVEZ CORDOVA CESAR",
+        "count": 9
+      },
+      {
+        "name": "AGUILAR CASTRO MAXIMO",
+        "count": 8
+      },
+      {
+        "name": "CASTRO ORTIZ EMILIO",
+        "count": 8
+      },
+      {
+        "name": "CORDOVA CARDENAS PATRICIA",
+        "count": 8
+      },
+      {
+        "name": "CORDOVA PEREZ ISABEL",
+        "count": 8
+      },
+      {
+        "name": "MENDOZA NUNEZ SERGIO",
+        "count": 8
+      },
+      {
+        "name": "MIRANDA SILVA ISABEL",
+        "count": 8
+      },
+      {
+        "name": "PALACIOS SALAZAR LUISA",
+        "count": 8
+      },
+      {
+        "name": "RODRIGUEZ CORDOVA ELENA",
+        "count": 8
+      }
+    ]
+  }
+}

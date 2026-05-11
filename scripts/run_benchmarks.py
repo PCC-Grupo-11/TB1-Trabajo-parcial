@@ -72,7 +72,7 @@ def main():
         summary.append({"mode": mode, "workers": w, "rc": rc})
 
         if index < total_runs:
-            time.sleep(20)
+            time.sleep(30)
 
     print("\nAll runs finished. Summary:")
     for s in summary:

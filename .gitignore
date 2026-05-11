@@ -1,2 +1,10 @@
 .DS_Store
 PC1/eda/yelp_review_cleaned.parquet
+bin/
+*.out
+.github/*
+data/cleaned_dataset.csv
+!internal/benchmark/
+benchmark
+benchmark.exe
+#data/Dataset Arreglado.csv
